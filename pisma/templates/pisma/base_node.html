@@ -1,0 +1,47 @@
+{% extends "./base_index.html" %}
+{% load static %}
+
+
+{% block title %}{{ node.name }}{% endblock %}
+{% block title_body %}{{ node.name }} (<a href="{{ node.url }}" target="_blank">{{ node.url }}</a>){% endblock %}
+
+
+{% block main %}
+
+<h4>Cluster members</h4>
+
+<table class="table table-striped table-bordered">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Node ID</th>
+      <th scope="col">Host name</th>
+      <th scope="col">Node type</th>
+      <th scope="col">Running state</th>
+      <th scope="col">Start time</th>
+      <th scope="col">Last heartbeat</th>
+      <th scope="col">Requetors</th>
+      <th scope="col">Users</th>
+      <th scope="col">Agents</th>
+      <th scope="col">Timeouts</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for member in cluster_members %}
+    <tr>
+      <th scope="row">{{ member.nodeId }}</th>
+      <td>{{ member.host_name }}</td>
+      <td>{{ member.node_type }}</td>
+      <td>{{ member.running_state }}</td>
+      <td>{{ member.starttime }}</td>
+      <td>{{ member.last_heartbeat }}</td>
+      <td>{{ member.metrics.requestors }}</td>
+      <td>{{ member.metrics.users }}</td>
+      <td>{{ member.metrics.agents }}</td>
+      <td>{{ member.metrics.timeouts }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+

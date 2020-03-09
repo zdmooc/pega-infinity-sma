@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Home{% endblock title %} | Pega Infinity SMA</title>
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'pisma/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'pisma/css/index.css' %}">
+    <script src="{% static 'pisma/js/jquery.min.js'%}"></script>
+    <script src="{% static 'pisma/js/popper.min.js'%}"></script>
+    <script src="{% static 'pisma/js/bootstrap.min.js'%}"></script>
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{% url 'pisma:index'%}">Pega Infinity SMA</a>
+    <!--    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">-->
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{% url 'pisma:logout_view'%}">Sign out</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Nodes</span>
+                </h6>
+                <ul class="nav flex-column">
+                    {% for node in nodes %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pisma:node' node.id%}">
+                            <span data-feather="server"></span>
+                            {{ node.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                {% if node %}
+
+<!--                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">-->
+<!--                    <span>Caches</span>-->
+<!--                </h6>-->
+
+<!--                <ul class="nav flex-column">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="#">-->
+<!--                            <span data-feather="home"></span>-->
+<!--                            Conclusion-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+<!--                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">-->
+<!--                    <span>Agents</span>-->
+<!--                </h6>-->
+
+<!--                <ul class="nav flex-column">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="#">-->
+<!--                            <span data-feather="repeat"></span>-->
+<!--                            Agents-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+<!--                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">-->
+<!--                    <span>Job schedulers</span>-->
+<!--                </h6>-->
+
+<!--                <ul class="nav flex-column">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="#">-->
+<!--                            <span data-feather="repeat"></span>-->
+<!--                            Job schedulers-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+<!--                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">-->
+<!--                    <span>Pools</span>-->
+<!--                </h6>-->
+
+<!--                <ul class="nav flex-column">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="#">-->
+<!--                            <span data-feather="home"></span>-->
+<!--                            Pools-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+<!--                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">-->
+<!--                    <span>Queue processors</span>-->
+<!--                </h6>-->
+
+<!--                <ul class="nav flex-column">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="#">-->
+<!--                            <span data-feather="repeat"></span>-->
+<!--                            Queue processors-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+<!--                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">-->
+<!--                    <span>Reports</span>-->
+<!--                </h6>-->
+
+<!--                <ul class="nav flex-column">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="#">-->
+<!--                            <span data-feather="home"></span>-->
+<!--                            Reports-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Requestors</span>
+                </h6>
+
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pisma:requestors' node.id%}">
+                            <span data-feather="list"></span>
+                            Requestors
+                        </a>
+                    </li>
+                </ul>
+
+<!--                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">-->
+<!--                    <span>Loggers</span>-->
+<!--                </h6>-->
+
+<!--                <ul class="nav flex-column">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="#">-->
+<!--                            <span data-feather="home"></span>-->
+<!--                            Loggers-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+                {% endif %}
+
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{% block title_body %}Pega Infinity System Management Application{% endblock title_body %}</h1>
+            </div>
+            {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+            {% endif %}
+
+            {% if success_message %}
+            <div class="alert alert-success" role="alert">
+                {{ success_message }}
+            </div>
+            {% endif %}
+            {% block main %}
+            <div class="container-fluid">
+
+<div class="row">
+            {% for node in nodes %}
+            <div class="card" style="margin: 5px">
+                <div class="card-body">
+                    <h5 class="card-title">{{ node.name }}</h5>
+                    <p class="card-text"><strong>URL</strong>: {{ node.url }}</p>
+                    <p class="card-text"><strong>Production level</strong>: {{ node.production_level }}</p>
+                    <a href="{% url 'pisma:node' node.id%}" class="btn btn-primary">Select node</a>
+                </div>
+            </div>
+            {% endfor %}
+            </div></div>
+            {% endblock main %}
+            <p class="mt-5 mb-3 text-muted">Denis Mishankov. 2020</p>
+        </main>
+    </div>
+</div>
+<script src="{% static 'pisma/js/feather.min.js'%}"></script>
+<script>
+      feather.replace()
+
+
+
+
+
+
+</script>
+</body>
+</html>
