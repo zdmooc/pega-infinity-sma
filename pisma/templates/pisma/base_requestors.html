@@ -3,7 +3,9 @@
 
 
 {% block title %}{{ node.name }} Requestors {% endblock %}
-{% block title_body %}{{ node.name }} (<a href="{{ node.url }}" target="_blank">{{ node.url }}</a>) / Requestors {% endblock %}
+{% block title_body %}
+{{ node.name }} (<a href="{{ node.url }}" target="_blank">{{ node.url }}</a>) / Requestors
+{% endblock %}
 
 
 {% block main %}
@@ -21,7 +23,9 @@
     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <a class="dropdown-item" href="{% url 'pisma:requestors_real' node.id 'all'%}">all</a>
         {% for member in cluster_members %}
-        <a class="dropdown-item" href="{% url 'pisma:requestors_real' node.id member.nodeId%}">{{ member.nodeId }}</a>
+        <a class="dropdown-item" href="{% url 'pisma:requestors_real' node.id member.nodeId%}">
+            {{ member.nodeId }} - {{ member.host_name }}
+        </a>
         {% endfor %}
     </div>
 </div>
