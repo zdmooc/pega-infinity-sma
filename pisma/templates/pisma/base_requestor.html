@@ -1,0 +1,48 @@
+{% extends "./base_index.html" %}
+{% load static %}
+
+
+{% block title %}{{ node.name }} Requestors {% endblock %}
+{% block title_body %}
+{{ node.name }} (<a href="{{ node.url }}" target="_blank">{{ node.url }}</a>) / Requestors
+{% endblock %}
+
+
+{% block main %}
+
+{% if not error_message %}
+
+<h4>Requestor {{ requestor.requestor_id }} for {{ real_node_id }}</h4>
+
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Requestor ID</th>
+        <th>Operator name</th>
+        <th>Operator ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row">{{ requestor.requestor_id }}</th>
+        <td>{{ requestor.operator_name }}</td>
+        <td>{{ requestor.operator_id }}</td>
+    </tr>
+    </tbody>
+</table>
+
+
+<a href="{% url 'pisma:requestor' node.id real_node_id requestor.requestor_id 'interrupt'%}">
+    <button class="btn btn-warning" type="submit">Interrupt</button>
+</a>
+
+<a href="{% url 'pisma:requestor' node.id real_node_id requestor.requestor_id 'stop'%}">
+    <button class="btn btn-danger" type="submit">Stop</button>
+</a>
+
+
+
+{% endif %}
+
+{% endblock %}
+

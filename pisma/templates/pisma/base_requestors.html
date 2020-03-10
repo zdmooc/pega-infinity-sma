@@ -32,8 +32,8 @@
 
 {% if real_node_id %}
 
-{% for node in node_ids %}
-<h4>Requestors for {{ node }}</h4>
+{% for node_id in node_ids %}
+<h4>Requestors for {{ node_id }}</h4>
 
 <table class="table table-striped table-bordered">
     <thead class="thead-dark">
@@ -43,17 +43,27 @@
         <th>Operator ID</th>
         <th>Application</th>
         <th>Thread names</th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
     {% for requestor in requestors %}
-    {% if requestor.nodeId == node %}
+    {% if requestor.nodeId == node_id %}
     <tr>
-        <th scope="row">{{ requestor.requestor_id }}</th>
+        <th scope="row"><a href="{% url 'pisma:requestor' node.id requestor.nodeId requestor.requestor_id%}">{{ requestor.requestor_id }}</a></th>
         <td>{{ requestor.requestor_type }}</td>
         <td>{{ requestor.operator_id }}</td>
         <td>{{ requestor.application }}</td>
         <td>{{ requestor.thread_names }}</td>
+        <td>
+            <a href="{% url 'pisma:requestor' node.id real_node_id requestor.requestor_id 'interrupt'%}">
+                <button class="btn btn-warning" type="submit">Interrupt</button>
+            </a>
+
+            <a href="{% url 'pisma:requestor' node.id real_node_id requestor.requestor_id 'stop'%}">
+                <button class="btn btn-danger" type="submit">Stop</button>
+            </a>
+        </td>
     </tr>
     {% endif %}
     {% endfor %}

@@ -94,13 +94,78 @@ def delete_node(request):
 
 
 @login_required()
+def requestor(request, node_id, real_node_id, requestor_id, action=None):
+    context = default_index_context(node_id=node_id)
+    node = context['node']
+
+    try:
+        data = pegaapi.requestor(node.url, node.login, node.password, real_node_id, requestor_id, action)
+    except Exception as e:
+        context['error_message'] = e
+        return render(request, 'pisma/base_requestor.html', context)
+
+    if action == 'interrupt':
+        context['success_message'] = data.json()['data']['result'][0]['status']
+        data = pegaapi.requestor(node.url, node.login, node.password, real_node_id, requestor_id)
+        requestor_data = data.json()['data']['result'][0]['requestor_details']
+        context['requestor'] = requestor_data
+        context['real_node_id'] = real_node_id
+
+        return render(request, 'pisma/base_requestor.html', context)
+    elif action == 'stop':
+        context['success_message'] = 'Requestor {} stopped on node {}'.format(requestor_id, real_node_id)
+
+        try:
+            nodes_data = pegaapi.nodes(node.url, node.login, node.password)
+        except Exception as e:
+            context['error_message'] = e
+            return render(request, 'pisma/base_requestors.html', context)
+
+        if nodes_data.status_code == 200:
+            nodes_data_json = nodes_data.json()
+            cluster_members = []
+            for result in nodes_data_json['data']['result']:
+                for member in result['cluster_members']:
+                    cluster_members.append(member)
+                context['cluster_members'] = cluster_members
+        else:
+            context['error_message'] = 'Status code: {}. Response: {}'.format(nodes_data.status_code, nodes_data.text)
+
+        if real_node_id:
+            try:
+                requestors_data = pegaapi.requestors(node.url, node.login, node.password, real_node_id)
+            except Exception as e:
+                context['error_message'] = e
+                return render(request, 'pisma/base_requestors.html', context)
+
+            if requestors_data.status_code == 200:
+                requestors_data_json = requestors_data.json()
+                requestors = []
+                node_ids = []
+                for result in requestors_data_json['data']['result']:
+                    node_ids.append(result['nodeId'])
+                    for requestor in result['requestors']:
+                        requestor['nodeId'] = result['nodeId']
+                        requestors.append(requestor)
+                context['requestors'] = requestors
+                context['node_ids'] = node_ids
+            else:
+                context['error_message'] = 'Status code: {}. Response: {}'.format(requestors_data.status_code,
+                                                                                  requestors_data.text)
+
+        return render(request, 'pisma/base_requestors.html', context)
+    else:
+        requestor_data = data.json()['data']['result'][0]['requestor_details']
+        context['requestor'] = requestor_data
+        context['real_node_id'] = real_node_id
+
+        return render(request, 'pisma/base_requestor.html', context)
+
+
+@login_required()
 def requestors(request, node_id, real_node_id=None):
     context = default_index_context(node_id)
     node = context['node']
-
-    if request.method == 'POST':
-        real_node_id = request.POST['node_id']
-        return HttpResponseRedirect(reverse('pisma:requestors_real', args=(node_id, real_node_id,)))
 
     try:
         nodes_data = pegaapi.nodes(node.url, node.login, node.password)
@@ -108,15 +173,12 @@ def requestors(request, node_id, real_node_id=None):
         context['error_message'] = e
         return render(request, 'pisma/base_requestors.html', context)
 
-    if nodes_data.status_code == 200:
-        nodes_data_json = nodes_data.json()
-        cluster_members = []
-        for result in nodes_data_json['data']['result']:
-            for member in result['cluster_members']:
-                cluster_members.append(member)
-            context['cluster_members'] = cluster_members
-    else:
-        context['error_message'] = 'Status code: {}. Response: {}'.format(nodes_data.status_code, nodes_data.text)
+    nodes_data_json = nodes_data.json()
+    cluster_members = []
+    for result in nodes_data_json['data']['result']:
+        for member in result['cluster_members']:
+            cluster_members.append(member)
+        context['cluster_members'] = cluster_members
 
     if real_node_id:
         try:
@@ -125,20 +187,17 @@ def requestors(request, node_id, real_node_id=None):
             context['error_message'] = e
             return render(request, 'pisma/base_requestors.html', context)
 
-        if requestors_data.status_code == 200:
-            requestors_data_json = requestors_data.json()
-            requestors = []
-            node_ids = []
-            for result in requestors_data_json['data']['result']:
-                node_ids.append(result['nodeId'])
-                for requestor in result['requestors']:
-                    requestor['nodeId'] = result['nodeId']
-                    requestors.append(requestor)
-            context['requestors'] = requestors
-            context['node_ids'] = node_ids
-        else:
-            context['error_message'] = 'Status code: {}. Response: {}'.format(requestors_data.status_code,
-                                                                              requestors_data.text)
+        requestors_data_json = requestors_data.json()
+        requestors = []
+        node_ids = []
+        for result in requestors_data_json['data']['result']:
+            node_ids.append(result['nodeId'])
+            for requestor in result['requestors']:
+                requestor['nodeId'] = result['nodeId']
+                requestors.append(requestor)
+        context['requestors'] = requestors
+        context['node_ids'] = node_ids
+
         context['real_node_id'] = real_node_id
 
     return render(request, 'pisma/base_requestors.html', context)
