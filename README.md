@@ -1,7 +1,7 @@
 # pega-infinity-sma
 System Management Application for Pega Infinity based on Pega API
 
-## Зависимости
+## Dependencies
 Web framework: Django https://www.djangoproject.com/
 
 Icons: Feather https://feathericons.com/
