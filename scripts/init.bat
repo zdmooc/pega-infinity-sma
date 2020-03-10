@@ -5,7 +5,7 @@ echo Activate virtual env
 call venv\Scripts\activate.bat
 ​
 echo Install dependences
-call venv\Scripts\pip install -r requirements.txt -i https://binary.alfabank.ru/artifactory/api/pypi/pypi-remote/simple
+call venv\Scripts\pip install -r requirements.txt
 ​
 echo Run migrations
 call python manage.py migrate
