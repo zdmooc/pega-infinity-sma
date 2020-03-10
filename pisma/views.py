@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 from .models import PegaNode
 import pegaapi
@@ -39,19 +40,15 @@ def node(request, node_id):
             try:
                 nodes_data = pegaapi.nodes(node.url, node.login, node.password)
             except Exception as e:
-                context['error_message'] = e
+                messages.error(request, e)
                 return render(request, 'pisma/base_node.html', context)
 
-            if nodes_data.status_code == 200:
-                nodes_data_json = nodes_data.json()
-                cluster_members = []
-                for result in nodes_data_json['data']['result']:
-                    for member in result['cluster_members']:
-                        cluster_members.append(member)
-                    context['cluster_members'] = cluster_members
-            else:
-                context['error_message'] = 'Status code: {}. Response: {}'.format(nodes_data.status_code,
-                                                                                  nodes_data.text)
+            nodes_data_json = nodes_data.json()
+            cluster_members = []
+            for result in nodes_data_json['data']['result']:
+                for member in result['cluster_members']:
+                    cluster_members.append(member)
+                context['cluster_members'] = cluster_members
 
     return render(request, 'pisma/base_node.html', context)
 
@@ -101,11 +98,11 @@ def requestor(request, node_id, real_node_id, requestor_id, action=None):
     try:
         data = pegaapi.requestor(node.url, node.login, node.password, real_node_id, requestor_id, action)
     except Exception as e:
-        context['error_message'] = e
+        messages.error(request, e)
         return render(request, 'pisma/base_requestor.html', context)
 
     if action == 'interrupt':
-        context['success_message'] = data.json()['data']['result'][0]['status']
+        messages.success(request, data.json()['data']['result'][0]['status'])
         data = pegaapi.requestor(node.url, node.login, node.password, real_node_id, requestor_id)
         requestor_data = data.json()['data']['result'][0]['requestor_details']
         context['requestor'] = requestor_data
@@ -113,45 +110,38 @@ def requestor(request, node_id, real_node_id, requestor_id, action=None):
 
         return render(request, 'pisma/base_requestor.html', context)
     elif action == 'stop':
-        context['success_message'] = 'Requestor {} stopped on node {}'.format(requestor_id, real_node_id)
+        messages.success(request, 'Requestor {} stopped on node {}'.format(requestor_id, real_node_id))
 
         try:
             nodes_data = pegaapi.nodes(node.url, node.login, node.password)
         except Exception as e:
-            context['error_message'] = e
+            messages.error(request, e)
             return render(request, 'pisma/base_requestors.html', context)
 
-        if nodes_data.status_code == 200:
-            nodes_data_json = nodes_data.json()
-            cluster_members = []
-            for result in nodes_data_json['data']['result']:
-                for member in result['cluster_members']:
-                    cluster_members.append(member)
-                context['cluster_members'] = cluster_members
-        else:
-            context['error_message'] = 'Status code: {}. Response: {}'.format(nodes_data.status_code, nodes_data.text)
+        nodes_data_json = nodes_data.json()
+        cluster_members = []
+        for result in nodes_data_json['data']['result']:
+            for member in result['cluster_members']:
+                cluster_members.append(member)
+            context['cluster_members'] = cluster_members
 
         if real_node_id:
             try:
                 requestors_data = pegaapi.requestors(node.url, node.login, node.password, real_node_id)
             except Exception as e:
-                context['error_message'] = e
+                messages.error(request, e)
                 return render(request, 'pisma/base_requestors.html', context)
 
-            if requestors_data.status_code == 200:
-                requestors_data_json = requestors_data.json()
-                requestors = []
-                node_ids = []
-                for result in requestors_data_json['data']['result']:
-                    node_ids.append(result['nodeId'])
-                    for requestor in result['requestors']:
-                        requestor['nodeId'] = result['nodeId']
-                        requestors.append(requestor)
-                context['requestors'] = requestors
-                context['node_ids'] = node_ids
-            else:
-                context['error_message'] = 'Status code: {}. Response: {}'.format(requestors_data.status_code,
-                                                                                  requestors_data.text)
+            requestors_data_json = requestors_data.json()
+            requestors = []
+            node_ids = []
+            for result in requestors_data_json['data']['result']:
+                node_ids.append(result['nodeId'])
+                for requestor in result['requestors']:
+                    requestor['nodeId'] = result['nodeId']
+                    requestors.append(requestor)
+            context['requestors'] = requestors
+            context['node_ids'] = node_ids
 
         return render(request, 'pisma/base_requestors.html', context)
     else:
@@ -170,7 +160,7 @@ def requestors(request, node_id, real_node_id=None):
     try:
         nodes_data = pegaapi.nodes(node.url, node.login, node.password)
     except Exception as e:
-        context['error_message'] = e
+        messages.error(request, e)
         return render(request, 'pisma/base_requestors.html', context)
 
     nodes_data_json = nodes_data.json()
@@ -184,7 +174,7 @@ def requestors(request, node_id, real_node_id=None):
         try:
             requestors_data = pegaapi.requestors(node.url, node.login, node.password, real_node_id)
         except Exception as e:
-            context['error_message'] = e
+            messages.error(request, e)
             return render(request, 'pisma/base_requestors.html', context)
 
         requestors_data_json = requestors_data.json()
@@ -213,7 +203,8 @@ def login_view(request):
             # TODO: redirect to 'next' query parameter
             return HttpResponseRedirect(reverse('pisma:index'))
         else:
-            return render(request, 'pisma/login.html', {'error_message': 'Invalid credentials'})
+            messages.error(request, 'Invalid credentials')
+            return render(request, 'pisma/login.html')
     else:
         if request.user.is_authenticated:
             return HttpResponseRedirect(reverse('pisma:index'))

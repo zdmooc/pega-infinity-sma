@@ -178,17 +178,22 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">{% block title_body %}Pega Infinity System Management Application{% endblock title_body %}</h1>
             </div>
-            {% if error_message %}
-            <div class="alert alert-danger" role="alert">
-                {{ error_message }}
-            </div>
+
+
+            {% if messages %}
+            {% for message in messages %}
+
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+            <div class="alert alert-danger" role="alert">{{ message }}</div>
             {% endif %}
 
-            {% if success_message %}
-            <div class="alert alert-success" role="alert">
-                {{ success_message }}
-            </div>
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            <div class="alert alert-success" role="alert">{{ message }}</div>
             {% endif %}
+
+            {% endfor %}
+            {% endif %}
+
             {% block main %}
             <div class="container-fluid">
 
