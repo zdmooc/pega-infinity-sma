@@ -1,5 +1,6 @@
 import rwhe as requests
 
+# TODO: DSS?
 # timeout for requests in seconds
 TIMEOUT = 5
 

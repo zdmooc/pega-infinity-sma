@@ -56,13 +56,11 @@
         <td>{{ requestor.application }}</td>
         <td>{{ requestor.thread_names }}</td>
         <td>
-            <a href="{% url 'pisma:requestor' node.id real_node_id requestor.requestor_id 'interrupt'%}">
-                <button class="btn btn-warning" type="submit">Interrupt</button>
-            </a>
-
-            <a href="{% url 'pisma:requestor' node.id real_node_id requestor.requestor_id 'stop'%}">
-                <button class="btn btn-danger" type="submit">Stop</button>
-            </a>
+            <form action="{% url 'pisma:requestor' node.id real_node_id requestor.requestor_id %}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-warning" type="submit" name="interrupt">Interrupt</button>
+                <button class="btn btn-danger" type="submit" name="stop">Stop</button>
+            </form>
         </td>
     </tr>
     {% endif %}
