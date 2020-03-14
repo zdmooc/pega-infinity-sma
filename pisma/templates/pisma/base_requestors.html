@@ -35,7 +35,7 @@
 {% for node_id in node_ids %}
 <h4>Requestors for {{ node_id }}</h4>
 
-<table class="table table-striped table-bordered" id="requestors_table">
+<table class="table table-striped table-bordered" id="requestors_table_{{ node_id }}">
     <thead class="thead-dark">
     <tr>
         <th scope="col">Requestor ID</th>
@@ -70,7 +70,7 @@
 
 <script>
     $(document).ready( function () {
-        $('#requestors_table').DataTable();
+        $('#requestors_table_{{ node_id }}').DataTable();
     } );
 </script>
 
