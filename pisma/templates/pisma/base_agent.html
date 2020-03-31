@@ -46,7 +46,7 @@
         <td>{{ instance.scheduling }}</td>
 
         <td>
-            <form action="{% url 'pisma:agent' node.id real_node_id agent.agent_id %}" method="post">
+            <form action="{% url 'pisma:agent' node.id instance.node_id agent.agent_id %}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-success" type="submit" name="start">Start</button>
                 <button class="btn btn-warning" type="submit" name="restart">Restart</button>
