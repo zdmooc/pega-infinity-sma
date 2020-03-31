@@ -13,7 +13,6 @@ urlpatterns = [
     path('node/<int:node_id>/requestors/<str:real_node_id>/<str:requestor_id>/', views.requestor, name='requestor'),
 
     path('node/<int:node_id>/agents/', views.agents, name='agents'),
-    path('node/<int:node_id>/agents/<str:real_node_id>/', views.agents, name='agents_real'),
     path('node/<int:node_id>/agents/<str:real_node_id>/<str:agent_id>', views.agent, name='agent'),
     # path('node/new', views.new_node, name='new_node'),
     # path('node/delete', views.delete_node, name='delete_node')

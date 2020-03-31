@@ -186,12 +186,12 @@ def agent(request, node_id, real_node_id, agent_id, action=None):
             messages.success(request, data.json()['data']['result'][0]['message'])
         except Exception as e:
             messages.error(request, e)
-            return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, real_node_id, agent_id,)))
+            return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, 'all', agent_id,)))
 
-        return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, real_node_id, agent_id,)))
+        return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, 'all', agent_id,)))
     else:
         try:
-            data = pegaapi.agent(node.url, node.login, node.password, real_node_id, agent_id)
+            data = pegaapi.agent(node.url, node.login, node.password, 'all', agent_id)
             agent_data = data.json()['data']['result'][0]['agent_info']
             context['agent'] = agent_data
             context['real_node_id'] = real_node_id
@@ -202,7 +202,7 @@ def agent(request, node_id, real_node_id, agent_id, action=None):
 
 
 @login_required()
-def agents(request, node_id, real_node_id=None):
+def agents(request, node_id):
     context = default_index_context(node_id)
     node = context['node']
 
@@ -219,24 +219,22 @@ def agents(request, node_id, real_node_id=None):
             cluster_members.append(member)
         context['cluster_members'] = cluster_members
 
-    if real_node_id:
-        try:
-            agents_data = pegaapi.agents(node.url, node.login, node.password, real_node_id)
-        except Exception as e:
-            messages.error(request, e)
-            return render(request, 'pisma/base_agents.html', context)
+    try:
+        agents_data = pegaapi.agents(node.url, node.login, node.password, 'all')
+    except Exception as e:
+        messages.error(request, e)
+        return render(request, 'pisma/base_agents.html', context)
 
-        agents_data_json = agents_data.json()
-        agents = []
-        for result in agents_data_json['data']['result']:
-            agent = result['agent_info']
-            agent['agent_name'] = agent['agent_id'].split('|')[0]
-            agent['agent_ruleset'] = agent['agent_id'].split('|')[1]
-            # TODO: Pega magic
-            if agent['agent_id'] != 'Refactor Copy/Move/Merge|Pega-RuleRefactoring':
-                agents.append(result['agent_info'])
-        context['agents'] = agents
-        context['real_node_id'] = real_node_id
+    agents_data_json = agents_data.json()
+    agents = []
+    for result in agents_data_json['data']['result']:
+        agent = result['agent_info']
+        agent['agent_name'] = agent['agent_id'].split('|')[0]
+        agent['agent_ruleset'] = agent['agent_id'].split('|')[1]
+        # TODO: Pega magic
+        if agent['agent_id'] != 'Refactor Copy/Move/Merge|Pega-RuleRefactoring':
+            agents.append(result['agent_info'])
+    context['agents'] = agents
 
     return render(request, 'pisma/base_agents.html', context)
 
