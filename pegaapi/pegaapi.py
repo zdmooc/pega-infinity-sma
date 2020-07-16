@@ -1,3 +1,4 @@
+from requests import Response
 import rwhe as requests
 
 # TODO: DSS?
@@ -5,7 +6,7 @@ import rwhe as requests
 TIMEOUT = 5
 
 
-def nodes(url, login, password):
+def nodes(url, login, password) -> Response:
     data = requests.get('{}/prweb/api/v1/nodes'.format(url), auth=(login, password), timeout=TIMEOUT)
     return data
 
@@ -16,7 +17,7 @@ def requestors(url, login, password, node_id):
     return data
 
 
-def requestor(url, login, password, node_id, requestor_id, action=None):
+def requestor(url, login, password, node_id, requestor_id, action=None) -> Response:
     if action == 'interrupt':
         data = requests.put('{}/prweb/api/v1/nodes/{}/requestors/{}/interrupt'.format(url, node_id, requestor_id),
                             auth=(login, password),
@@ -32,13 +33,13 @@ def requestor(url, login, password, node_id, requestor_id, action=None):
     return data
 
 
-def agents(url, login, password, node_id):
+def agents(url, login, password, node_id) -> Response:
     data = requests.get('{}/prweb/api/v1/nodes/{}/agents'.format(url, node_id), auth=(login, password),
                         timeout=TIMEOUT)
     return data
 
 
-def agent(url, login, password, node_id, agent_id, action=None):
+def agent(url, login, password, node_id, agent_id, action=None) -> Response:
     if action == 'start':
         data = requests.post('{}/prweb/api/v1/nodes/{}/agents/{}'.format(url, node_id, agent_id),
                              auth=(login, password),

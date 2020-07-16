@@ -1,242 +1,108 @@
-from django.shortcuts import render, get_list_or_404
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.contrib import messages
 
-from .models import PegaNode
-import pegaapi
+from .views_services import *
 
 
-def default_index_context(node_id=None):
-    nodes = get_list_or_404(PegaNode)
-    context = {'nodes': nodes}
+def basic_view(template: str):
+    """
+    Decorator for basic view
+    """
 
-    if node_id:
-        for node in nodes:
-            if node.id == node_id:
-                context['node'] = node
-
-    return context
-
-
-@login_required()
-def index(request):
-    return render(
-        request,
-        'pisma/base_index.html',
-        default_index_context()
-    )
-
-
-@login_required()
-def node(request, node_id):
-    context = default_index_context()
-    for node in context['nodes']:
-        if node.id == node_id:
-            context['node'] = node
+    def decorator(actual_view):
+        def wrapper(request, node_id, **kwargs):
             try:
-                nodes_data = pegaapi.nodes(node.url, node.login, node.password)
+                context = actual_view(request, node_id, **kwargs)
             except Exception as e:
+                context = get_default_context(node_id)
                 messages.error(request, e)
-                return render(request, 'pisma/base_node.html', context)
 
-            nodes_data_json = nodes_data.json()
-            cluster_members = []
-            for result in nodes_data_json['data']['result']:
-                for member in result['cluster_members']:
-                    cluster_members.append(member)
-                context['cluster_members'] = cluster_members
+            return render(request, template, context)
 
-    return render(request, 'pisma/base_node.html', context)
+        return wrapper
 
-
-@login_required()
-def new_node(request):
-    if request.method == 'POST':
-        context = default_index_context()
-
-        node = PegaNode()
-        node.name = request.POST['name']
-        node.url = request.POST['url']
-        node.production_level = request.POST['production_level']
-
-        try:
-            user = User.objects.create_user(
-                username='{}-{}'.format(request.POST['name'], request.POST['login']),
-                first_name=request.POST['login'],
-                password=request.POST['password']
-            )
-            user.save()
-
-            node.user = user
-            node.save()
-        except Exception as e:
-            user.delete()
-            context['error_message'] = 'Node was not added. Error {}'.format(e)
-            return render(request, 'pisma/new_node.html', context)
-
-        context['success_message'] = 'Node {} was added'.format(node.name)
-
-        return render(request, 'pisma/new_node.html', context)
-    else:
-        return render(request, 'pisma/new_node.html', default_index_context())
-
-
-@login_required()
-def delete_node(request):
-    pass
-
-
-@login_required()
-def requestor(request, node_id, real_node_id, requestor_id, action=None):
-    context = default_index_context(node_id=node_id)
-    node = context['node']
-
-    # TODO: need history for all actions
-    if request.method == 'POST':
-        if 'interrupt' in request.POST:
-            action = 'interrupt'
-        else:
-            action = 'stop'
-
-        try:
-            data = pegaapi.requestor(node.url, node.login, node.password, real_node_id, requestor_id, action)
-            messages.success(request, data.json()['data']['result'][0]['status'])
-        except Exception as e:
-            messages.error(request, e)
-            return HttpResponseRedirect(reverse('pisma:requestor', args=(node_id, real_node_id, requestor_id,)))
-
-        if action == 'interrupt':
-            return HttpResponseRedirect(reverse('pisma:requestor', args=(node_id, real_node_id, requestor_id,)))
-        else:
-            return HttpResponseRedirect(reverse('pisma:requestors_real', args=(node_id, real_node_id,)))
-
-    else:
-        try:
-            data = pegaapi.requestor(node.url, node.login, node.password, real_node_id, requestor_id)
-            requestor_data = data.json()['data']['result'][0]['requestor_details']
-            context['requestor'] = requestor_data
-            context['real_node_id'] = real_node_id
-        except Exception as e:
-            messages.error(request, e)
-
-        return render(request, 'pisma/base_requestor.html', context)
-
-
-@login_required()
-def requestors(request, node_id, real_node_id=None):
-    context = default_index_context(node_id)
-    node = context['node']
-
-    try:
-        nodes_data = pegaapi.nodes(node.url, node.login, node.password)
-    except Exception as e:
-        messages.error(request, e)
-        return render(request, 'pisma/base_requestors.html', context)
-
-    nodes_data_json = nodes_data.json()
-    cluster_members = []
-    for result in nodes_data_json['data']['result']:
-        for member in result['cluster_members']:
-            cluster_members.append(member)
-        context['cluster_members'] = cluster_members
-
-    if real_node_id:
-        try:
-            requestors_data = pegaapi.requestors(node.url, node.login, node.password, real_node_id)
-        except Exception as e:
-            messages.error(request, e)
-            return render(request, 'pisma/base_requestors.html', context)
-
-        requestors_data_json = requestors_data.json()
-        requestors = []
-        node_ids = []
-        for result in requestors_data_json['data']['result']:
-            node_ids.append(result['nodeId'])
-            for requestor in result['requestors']:
-                requestor['nodeId'] = result['nodeId']
-                requestors.append(requestor)
-        context['requestors'] = requestors
-        context['node_ids'] = node_ids
-
-        context['real_node_id'] = real_node_id
-
-    return render(request, 'pisma/base_requestors.html', context)
+    return decorator
 
 
 @login_required
-def agent(request, node_id, real_node_id, agent_id, action=None):
-    context = default_index_context(node_id=node_id)
-    node = context['node']
-
-    # TODO: need history for all actions
-    if request.method == 'POST':
-        if 'start' in request.POST:
-            action = 'start'
-        elif 'restart' in request.POST:
-            action = 'restart'
-        elif 'stop' in request.POST:
-            action = 'stop'
-
-        try:
-            data = pegaapi.agent(node.url, node.login, node.password, real_node_id, agent_id, action)
-            messages.success(request, data.json()['data']['result'][0]['message'])
-        except Exception as e:
-            messages.error(request, e)
-            return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, 'all', agent_id,)))
-
-        return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, 'all', agent_id,)))
-    else:
-        try:
-            data = pegaapi.agent(node.url, node.login, node.password, 'all', agent_id)
-            agent_data = data.json()['data']['result'][0]['agent_info']
-            context['agent'] = agent_data
-            context['real_node_id'] = real_node_id
-        except Exception as e:
-            messages.error(request, e)
-
-        return render(request, 'pisma/base_agent.html', context)
+def index(request):
+    return render(request, 'pisma/base_index.html', get_default_context())
 
 
-@login_required()
+@login_required
+@basic_view(template='pisma/base_node.html')
+def node(request, node_id):
+    return get_context_for_node(node_id)
+
+
+@login_required
+@basic_view(template='pisma/base_requestor.html')
+def requestor(request, node_id, real_node_id, requestor_id):
+    return get_context_for_requestor(node_id, real_node_id, requestor_id)
+
+
+@login_required
+@basic_view(template='pisma/base_requestors.html')
+def requestors(request, node_id, real_node_id=None):
+    return get_context_for_requestors(node_id, real_node_id)
+
+
+@login_required
+@basic_view(template='pisma/base_agent.html')
+def agent(request, node_id, real_node_id, agent_id):
+    return get_context_for_agent(node_id, real_node_id, agent_id)
+
+
+@login_required
+@basic_view(template='pisma/base_agents.html')
 def agents(request, node_id):
-    context = default_index_context(node_id)
-    node = context['node']
+    return get_context_for_agents(node_id)
+
+
+@login_required
+def requestor_action(request, node_id, real_node_id, requestor_id, ):
+    if 'interrupt' in request.POST:
+        action = 'interrupt'
+    else:
+        action = 'stop'
 
     try:
-        nodes_data = pegaapi.nodes(node.url, node.login, node.password)
+        status = take_action_on_requestor(node_id, real_node_id, requestor_id, action)
+        messages.success(request, status)
     except Exception as e:
         messages.error(request, e)
-        return render(request, 'pisma/base_agents.html', context)
+        return HttpResponseRedirect(reverse('pisma:requestor', args=(node_id, real_node_id, requestor_id,)))
 
-    nodes_data_json = nodes_data.json()
-    cluster_members = []
-    for result in nodes_data_json['data']['result']:
-        for member in result['cluster_members']:
-            cluster_members.append(member)
-        context['cluster_members'] = cluster_members
+    if action == 'interrupt':
+        return HttpResponseRedirect(reverse('pisma:requestor', args=(node_id, real_node_id, requestor_id,)))
+    else:
+        return HttpResponseRedirect(reverse('pisma:requestors_real', args=(node_id, real_node_id,)))
+
+
+@login_required
+def agent_action(request, node_id, real_node_id, agent_id):
+    if 'start' in request.POST:
+        action = 'start'
+    elif 'restart' in request.POST:
+        action = 'restart'
+    elif 'stop' in request.POST:
+        action = 'stop'
+    else:
+        messages.error(request, 'Invalid action')
+        return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, 'all', agent_id,)))
 
     try:
-        agents_data = pegaapi.agents(node.url, node.login, node.password, 'all')
+        status = take_action_on_agent(node_id, real_node_id, agent_id, action)
+        messages.success(request, status)
     except Exception as e:
         messages.error(request, e)
-        return render(request, 'pisma/base_agents.html', context)
+        return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, 'all', agent_id,)))
 
-    agents_data_json = agents_data.json()
-    agents = []
-    for result in agents_data_json['data']['result']:
-        agent = result['agent_info']
-        agent['agent_name'] = agent['agent_id'].split('|')[0]
-        agent['agent_ruleset'] = agent['agent_id'].split('|')[1]
-        # TODO: Pega magic
-        if agent['agent_id'] != 'Refactor Copy/Move/Merge|Pega-RuleRefactoring':
-            agents.append(result['agent_info'])
-    context['agents'] = agents
-
-    return render(request, 'pisma/base_agents.html', context)
+    return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, 'all', agent_id,)))
 
 
 def login_view(request):

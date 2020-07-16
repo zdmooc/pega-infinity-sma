@@ -32,7 +32,7 @@
 </table>
 
 
-<form action="{% url 'pisma:requestor' node.id real_node_id requestor.requestor_id %}" method="post">
+<form action="{% url 'pisma:requestor_action' node.id real_node_id requestor.requestor_id %}" method="post">
     {% csrf_token %}
     <button class="btn btn-warning" type="submit" name="interrupt">Interrupt</button>
     <button class="btn btn-danger" type="submit" name="stop">Stop</button>

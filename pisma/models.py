@@ -13,7 +13,6 @@ class PegaNode(models.Model):
     name = models.CharField(max_length=200)
     url = models.CharField(max_length=200)
     production_level = models.IntegerField(choices=ProductionLevels.choices)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # TODO: should somehow store this securely
     login = models.CharField(max_length=200)
