@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpRequest
 from django.urls import reverse
 from django.contrib import messages
 
@@ -14,7 +14,7 @@ def basic_view(template: str):
     """
 
     def decorator(actual_view):
-        def wrapper(request, node_id, **kwargs):
+        def wrapper(request: HttpRequest, node_id: str, **kwargs):
             try:
                 context = actual_view(request, node_id, **kwargs)
             except Exception as e:
@@ -29,42 +29,63 @@ def basic_view(template: str):
 
 
 @login_required
-def index(request):
+def index(request: HttpRequest):
+    """
+    Home page
+    """
     return render(request, 'pisma/base_index.html', get_default_context())
 
 
 @login_required
 @basic_view(template='pisma/base_node.html')
-def node(request, node_id):
+def node(request: HttpRequest, node_id: str):
+    """
+    Single node view
+    """
     return get_context_for_node(node_id)
 
 
 @login_required
 @basic_view(template='pisma/base_requestor.html')
-def requestor(request, node_id, real_node_id, requestor_id):
+def requestor(request: HttpRequest, node_id: str, real_node_id: str, requestor_id: str):
+    """
+    Single requestor view
+    """
     return get_context_for_requestor(node_id, real_node_id, requestor_id)
 
 
 @login_required
 @basic_view(template='pisma/base_requestors.html')
-def requestors(request, node_id, real_node_id=None):
+def requestors(request: HttpRequest, node_id: str, real_node_id: str=None):
+    """
+    Requestors list view
+    """
     return get_context_for_requestors(node_id, real_node_id)
 
 
 @login_required
 @basic_view(template='pisma/base_agent.html')
-def agent(request, node_id, real_node_id, agent_id):
+def agent(request: HttpRequest, node_id: str, real_node_id: str, agent_id: str):
+    """
+    Single agent view
+    """
     return get_context_for_agent(node_id, real_node_id, agent_id)
 
 
 @login_required
 @basic_view(template='pisma/base_agents.html')
-def agents(request, node_id):
+def agents(request: HttpRequest, node_id: str):
+    """
+    Agents list view
+    """
     return get_context_for_agents(node_id)
 
 
 @login_required
-def requestor_action(request, node_id, real_node_id, requestor_id, ):
+def requestor_action(request: HttpRequest, node_id: str, real_node_id: str, requestor_id: str):
+    """
+    Taking action on requestor: stop or interrupt
+    """
     if 'interrupt' in request.POST:
         action = 'interrupt'
     else:
@@ -84,7 +105,10 @@ def requestor_action(request, node_id, real_node_id, requestor_id, ):
 
 
 @login_required
-def agent_action(request, node_id, real_node_id, agent_id):
+def agent_action(request: HttpRequest, node_id: str, real_node_id: str, agent_id: str ):
+    """
+    Taking action on agent: start, restart or stop
+    """
     if 'start' in request.POST:
         action = 'start'
     elif 'restart' in request.POST:
@@ -105,7 +129,7 @@ def agent_action(request, node_id, real_node_id, agent_id):
     return HttpResponseRedirect(reverse('pisma:agent', args=(node_id, 'all', agent_id,)))
 
 
-def login_view(request):
+def login_view(request: HttpRequest):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -124,6 +148,6 @@ def login_view(request):
             return render(request, 'pisma/login.html')
 
 
-def logout_view(request):
+def logout_view(request: HttpRequest):
     logout(request)
     return HttpResponseRedirect(reverse('pisma:index'))
