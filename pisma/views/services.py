@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from .models import PegaNode
+from pisma.models import PegaNode
 
 import pegaapi
 from pegaapi import PegaAPIException
