@@ -1,7 +1,11 @@
 # pega-infinity-sma
 System Management Application for Pega Infinity based on Pega API
 
-Currently application in its early alpha stage. In the future it will cover all Pega API system management capabilities  
+Currently application in its early alpha stage. In the future it will cover all Pega API system management capabilities
+
+Available features:
+- Requestor management: *interrupt* and stop  
+- Agent management: start, stop and restart
 
 ## Instalation
 
