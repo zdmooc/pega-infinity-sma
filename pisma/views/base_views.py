@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpRequest
 from django.urls import reverse
 from django.contrib import messages
 
-from .services import *
+from .services import get_default_context, get_context_for_node
 
 
 def basic_view(template: str):
