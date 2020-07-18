@@ -22,6 +22,24 @@ def get_default_context(node_id: str = None) -> Dict:
     return context
 
 
+def get_cluster_members(node: PegaNode) -> List:
+    """
+    Return cluster members for node
+    """
+    try:
+        nodes_data = pegaapi.nodes(node.url, node.login, node.password)
+    except Exception as e:
+        raise PegaAPIException(str(e), str(node), 'nodes')
+
+    nodes_data_json = nodes_data.json()
+    cluster_members = []
+    for result in nodes_data_json['data']['result']:
+        for member in result['cluster_members']:
+            cluster_members.append(member)
+
+    return cluster_members
+
+
 def get_context_for_node(node_id: str) -> Dict:
     """
     Context for the node view
@@ -30,17 +48,7 @@ def get_context_for_node(node_id: str) -> Dict:
     for node in context['nodes']:
         if node.id == node_id:
             context['node'] = node
-            try:
-                nodes_data = pegaapi.nodes(node.url, node.login, node.password)
-            except Exception as e:
-                raise PegaAPIException(str(e), str(node), 'nodes')
-
-            nodes_data_json = nodes_data.json()
-            cluster_members = []
-            for result in nodes_data_json['data']['result']:
-                for member in result['cluster_members']:
-                    cluster_members.append(member)
-                context['cluster_members'] = cluster_members
+            context['cluster_members'] = get_cluster_members(node)
 
     return context
 
@@ -81,18 +89,7 @@ def get_context_for_requestors(node_id: str, real_node_id: str = None):
     """
     context = get_default_context(node_id)
     node: PegaNode = context['node']
-
-    try:
-        nodes_data = pegaapi.nodes(node.url, node.login, node.password)
-    except Exception as e:
-        raise PegaAPIException(str(e), str(node), 'nodes')
-
-    nodes_data_json = nodes_data.json()
-    cluster_members = []
-    for result in nodes_data_json['data']['result']:
-        for member in result['cluster_members']:
-            cluster_members.append(member)
-        context['cluster_members'] = cluster_members
+    context['cluster_members'] = get_cluster_members(node)
 
     if real_node_id:
         try:
