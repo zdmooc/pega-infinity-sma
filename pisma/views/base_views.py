@@ -52,7 +52,6 @@ def login_view(request: HttpRequest):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            # TODO: redirect to 'next' query parameter
             return HttpResponseRedirect(reverse('pisma:index'))
         else:
             messages.error(request, 'Invalid credentials')

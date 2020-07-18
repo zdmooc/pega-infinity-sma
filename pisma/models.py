@@ -14,7 +14,6 @@ class PegaNode(models.Model):
     url = models.CharField(max_length=200)
     production_level = models.IntegerField(choices=ProductionLevels.choices)
 
-    # TODO: should somehow store this securely
     login = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
 

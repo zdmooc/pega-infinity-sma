@@ -161,7 +161,7 @@ def get_context_for_agents(node_id: str) -> Dict:
         agent = result['agent_info']
         agent['agent_name'] = agent['agent_id'].split('|')[0]
         agent['agent_ruleset'] = agent['agent_id'].split('|')[1]
-        # TODO: Pega magic
+
         if agent['agent_id'] != 'Refactor Copy/Move/Merge|Pega-RuleRefactoring':
             agents.append(result['agent_info'])
     context['agents'] = agents
