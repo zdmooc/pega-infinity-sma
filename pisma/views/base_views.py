@@ -53,14 +53,12 @@ def login_view(request: HttpRequest):
         if user is not None:
             login(request, user)
             return HttpResponseRedirect(reverse('pisma:index'))
-        else:
-            messages.error(request, 'Invalid credentials')
-            return render(request, 'pisma/login.html')
+        messages.error(request, 'Invalid credentials')
+        return render(request, 'pisma/login.html')
     else:
         if request.user.is_authenticated:
             return HttpResponseRedirect(reverse('pisma:index'))
-        else:
-            return render(request, 'pisma/login.html')
+        return render(request, 'pisma/login.html')
 
 
 def logout_view(request: HttpRequest):

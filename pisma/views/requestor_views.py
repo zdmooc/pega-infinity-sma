@@ -46,5 +46,4 @@ def requestor_action(request: HttpRequest, node_id: str, real_node_id: str, requ
 
     if action == 'interrupt':
         return HttpResponseRedirect(reverse('pisma:requestor', args=(node_id, real_node_id, requestor_id,)))
-    else:
-        return HttpResponseRedirect(reverse('pisma:requestors_real', args=(node_id, real_node_id,)))
+    return HttpResponseRedirect(reverse('pisma:requestors_real', args=(node_id, real_node_id,)))
