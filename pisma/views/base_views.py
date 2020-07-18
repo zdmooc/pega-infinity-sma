@@ -55,10 +55,11 @@ def login_view(request: HttpRequest):
             return HttpResponseRedirect(reverse('pisma:index'))
         messages.error(request, 'Invalid credentials')
         return render(request, 'pisma/login.html')
-    else:
-        if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('pisma:index'))
-        return render(request, 'pisma/login.html')
+
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('pisma:index'))
+
+    return render(request, 'pisma/login.html')
 
 
 def logout_view(request: HttpRequest):
