@@ -40,7 +40,7 @@ Then you can access you node on home page http://0.0.0.0:8000/
 ## Settings
 All project wide settings should be done through environment variables
 
-- `PISMA_PEGAAPI_TIMEOUT` - timeout for PegaAPI services. Default is 5
+- `PISMA_PEGAAPI_TIMEOUT` - timeout for PegaAPI services. Default is `5`
 
 
 ## Technologies
