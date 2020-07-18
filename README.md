@@ -1,7 +1,7 @@
 # PISMA - Pega Infinity SMA (System Management Application)
 [![CodeFactor](https://www.codefactor.io/repository/github/mishankov/pega-infinity-sma/badge)](https://www.codefactor.io/repository/github/mishankov/pega-infinity-sma)
 
-System Management Application for Pega Infinity based on Pega API
+System Management Application for multiple Pega Infinity nodes based on Pega API
 
 Currently application in its early alpha stage. In the future it will cover all Pega API system management capabilities
 
