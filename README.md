@@ -4,7 +4,7 @@ System Management Application for Pega Infinity based on Pega API
 Currently application in its early alpha stage. In the future it will cover all Pega API system management capabilities
 
 Available features:
-- Requestor management: *interrupt* and stop  
+- Requestor management: interrupt and stop  
 - Agent management: start, stop and restart
 
 ## Instalation
@@ -44,8 +44,7 @@ All project wide settings should be done through environment variables
 
 
 ## Technologies
-Web framework: Django https://www.djangoproject.com/
-
-Icons: Feather https://feathericons.com/
-
-CSS, JS: Bootstrap 4 https://getbootstrap.com/
+- Web framework: Django https://www.djangoproject.com/
+- CSS, JS: Bootstrap 4 https://getbootstrap.com/
+- Tables on UI: DataTables https://datatables.net/
+- Icons: Feather https://feathericons.com/
