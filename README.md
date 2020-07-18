@@ -1,4 +1,4 @@
-# pega-infinity-sma
+# PISMA - Pega Infinity SMA (System Management Application)
 [![CodeFactor](https://www.codefactor.io/repository/github/mishankov/pega-infinity-sma/badge)](https://www.codefactor.io/repository/github/mishankov/pega-infinity-sma)
 
 System Management Application for Pega Infinity based on Pega API
@@ -43,6 +43,7 @@ Then you can access you node on home page http://0.0.0.0:8000/
 All project wide settings should be done through environment variables
 
 - `PISMA_PEGAAPI_TIMEOUT` - timeout for PegaAPI services. Default is `5`
+- `PISMA_DJANGO_SECRET_KEY` - Django secret key. Default is `SECRET_KEY`. You **must** change it, if you use PISMA with production environments
 
 
 ## Technologies

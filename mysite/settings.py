@@ -8,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=#^^b73-^)17*-h%)d4#jz1ntpjgt9w1r!vn$d*#5z(%3e^!&0'
+SECRET_KEY = os.getenv('PISMA_DJANGO_SECRET_KEY', 'SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -110,5 +110,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_URL = '/pisma/login/'
+LOGIN_URL = '/login/'
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
