@@ -1,9 +1,10 @@
+import os
+
 from requests import Response
 import rwhe as requests
 
-# TODO: DSS?
 # timeout for requests in seconds
-TIMEOUT = 5
+TIMEOUT = int(os.getenv('PISMA_PEGAAPI_TIMEOUT', '5'))
 
 
 def nodes(url: str, login: str, password: str) -> Response:
