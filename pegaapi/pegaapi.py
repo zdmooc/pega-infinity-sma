@@ -6,18 +6,18 @@ import rwhe as requests
 TIMEOUT = 5
 
 
-def nodes(url, login, password) -> Response:
+def nodes(url: str, login: str, password: str) -> Response:
     data = requests.get('{}/prweb/api/v1/nodes'.format(url), auth=(login, password), timeout=TIMEOUT)
     return data
 
 
-def requestors(url, login, password, node_id):
+def requestors(url: str, login: str, password: str, node_id: str) -> Response:
     data = requests.get('{}/prweb/api/v1/nodes/{}/requestors'.format(url, node_id), auth=(login, password),
                         timeout=TIMEOUT)
     return data
 
 
-def requestor(url, login, password, node_id, requestor_id, action=None) -> Response:
+def requestor(url: str, login: str, password: str, node_id: str, requestor_id: str, action: str = None) -> Response:
     if action == 'interrupt':
         data = requests.put('{}/prweb/api/v1/nodes/{}/requestors/{}/interrupt'.format(url, node_id, requestor_id),
                             auth=(login, password),
@@ -33,13 +33,13 @@ def requestor(url, login, password, node_id, requestor_id, action=None) -> Respo
     return data
 
 
-def agents(url, login, password, node_id) -> Response:
+def agents(url: str, login: str, password: str, node_id: str) -> Response:
     data = requests.get('{}/prweb/api/v1/nodes/{}/agents'.format(url, node_id), auth=(login, password),
                         timeout=TIMEOUT)
     return data
 
 
-def agent(url, login, password, node_id, agent_id, action=None) -> Response:
+def agent(url: str, login: str, password: str, node_id: str, agent_id: str, action: str = None) -> Response:
     if action == 'start':
         data = requests.post('{}/prweb/api/v1/nodes/{}/agents/{}'.format(url, node_id, agent_id),
                              auth=(login, password),

@@ -1,5 +1,5 @@
 class PegaAPIException(Exception):
-    def __init__(self, message, node, service):
+    def __init__(self, message: str, node: str, service: str):
         self.message = message
         self.node = node
         self.service = service

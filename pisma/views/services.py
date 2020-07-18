@@ -33,7 +33,7 @@ def get_context_for_node(node_id: str) -> Dict:
             try:
                 nodes_data = pegaapi.nodes(node.url, node.login, node.password)
             except Exception as e:
-                raise PegaAPIException(e, node, 'nodes')
+                raise PegaAPIException(str(e), str(node), 'nodes')
 
             nodes_data_json = nodes_data.json()
             cluster_members = []
@@ -58,7 +58,7 @@ def get_context_for_requestor(node_id: str, real_node_id: str, requestor_id: str
         context['requestor'] = requestor_data
         context['real_node_id'] = real_node_id
     except Exception as e:
-        raise PegaAPIException(e, node, 'requestors')
+        raise PegaAPIException(str(e), str(node), 'requestors')
 
     return context
 
@@ -72,7 +72,7 @@ def take_action_on_requestor(node_id: str, real_node_id: str, requestor_id: str,
         data = pegaapi.requestor(node.url, node.login, node.password, real_node_id, requestor_id, action)
         return data.json()['data']['result'][0]['status']
     except Exception as e:
-        raise PegaAPIException(e, node, 'requestors')
+        raise PegaAPIException(str(e), str(node), 'requestors')
 
 
 def get_context_for_requestors(node_id: str, real_node_id: str = None):
@@ -85,7 +85,7 @@ def get_context_for_requestors(node_id: str, real_node_id: str = None):
     try:
         nodes_data = pegaapi.nodes(node.url, node.login, node.password)
     except Exception as e:
-        raise PegaAPIException(e, node, 'nodes')
+        raise PegaAPIException(str(e), str(node), 'nodes')
 
     nodes_data_json = nodes_data.json()
     cluster_members = []
@@ -98,7 +98,7 @@ def get_context_for_requestors(node_id: str, real_node_id: str = None):
         try:
             requestors_data = pegaapi.requestors(node.url, node.login, node.password, real_node_id)
         except Exception as e:
-            raise PegaAPIException(e, node, 'requestors')
+            raise PegaAPIException(str(e), str(node), 'requestors')
 
         requestors_data_json = requestors_data.json()
         requestors = []
@@ -129,7 +129,7 @@ def get_context_for_agent(node_id: str, real_node_id: str, agent_id: str) -> Dic
         context['agent'] = agent_data
         context['real_node_id'] = real_node_id
     except Exception as e:
-        raise PegaAPIException(e, node, 'agents')
+        raise PegaAPIException(str(e), str(node), 'agents')
 
     return context
 
@@ -143,7 +143,7 @@ def take_action_on_agent(node_id: str, real_node_id: str, agent_id: str, action:
         data = pegaapi.agent(node.url, node.login, node.password, real_node_id, agent_id, action)
         return data.json()['data']['result'][0]['message']
     except Exception as e:
-        raise PegaAPIException(e, node, 'agents')
+        raise PegaAPIException(str(e), str(node), 'agents')
 
 
 def get_context_for_agents(node_id: str) -> Dict:
@@ -156,7 +156,7 @@ def get_context_for_agents(node_id: str) -> Dict:
     try:
         agents_data = pegaapi.agents(node.url, node.login, node.password, 'all')
     except Exception as e:
-        raise PegaAPIException(e, node, 'agents')
+        raise PegaAPIException(str(e), str(node), 'agents')
 
     agents_data_json = agents_data.json()
     agents = []
