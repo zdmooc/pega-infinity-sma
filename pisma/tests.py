@@ -13,6 +13,12 @@ class PegaNodeTestCase(TestCase):
         PegaNode.objects.create(name='PRELIVE', production_level=PegaNode.ProductionLevels.PRELIVE)
         PegaNode.objects.create(name='PRODUCTION', production_level=PegaNode.ProductionLevels.PRODUCTION)
 
+    def test_names(self):
+        all_nodes: List[PegaNode] = PegaNode.objects.all()
+
+        for node in all_nodes:
+            self.assertEqual(node.name, str(node))
+
     def test_production_levels(self):
         all_nodes: List[PegaNode] = PegaNode.objects.all()
 
