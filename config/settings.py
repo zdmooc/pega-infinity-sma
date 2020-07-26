@@ -3,7 +3,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -17,6 +16,49 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'pisma_full': {
+            'format': '[{asctime}] [{name}] [{process:d}] [{thread:d}] [{levelname}] [{user}] - {message}',
+            'style': '{',
+        },
+        'common_full': {
+            'format': '[{asctime}] [{name}] [{process:d}] [{thread:d}] [{levelname}] - {message}',
+            'style': '{',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': os.getenv('PISMA_DJANGO_CONSOLE_LOGGING_LEVEL', 'WARNING'),
+            'class': 'logging.StreamHandler',
+            'formatter': 'common_full'
+        },
+        'pisma_log_file': {
+            'level': os.getenv('PISMA_DJANGO_FILE_LOGGING_LEVEL', 'INFO'),
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'pisma.log'),
+            'formatter': 'pisma_full'
+        },
+        'error_log_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'errors.log'),
+            'formatter': 'common_full'
+        }
+    },
+    'root': {
+        'handlers': ['console', 'error_log_file'],
+        'level': os.getenv('PISMA_DJANGO_ROOT_LOGGING_LEVEL', 'ERROR'),
+    },
+    'loggers': {
+        'pisma': {
+            'handlers': ['console', 'pisma_log_file'],
+            'level': os.getenv('PISMA_DJANGO_PISMA_LOGGING_LEVEL', 'INFO')
+        }
+    }
+}
 
 # Application definition
 
@@ -60,7 +102,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -70,7 +111,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -90,7 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -103,7 +142,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

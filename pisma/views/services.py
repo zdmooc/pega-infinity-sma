@@ -1,11 +1,35 @@
-from typing import Dict, List
+from typing import Dict, List, Callable
 
 from pisma.models import PegaNode
+from pisma.logger import PismaLogger
 
 import pegaapi
 from pegaapi import PegaAPIException
 
+logger = PismaLogger(__name__)
 
+
+def service_decorator(service: Callable):
+    def wrapper(*args, **kwargs):
+        logger.debug('[{}] start. args: {}, kwargs: {}'.format(service.__name__, args, kwargs))
+
+        try:
+            result = service(*args, **kwargs)
+        except PegaAPIException as e:
+            logger.warning('[{}] pega api execution exception: "{}"'.format(service.__name__, e))
+            raise e
+        except Exception as e:
+            logger.warning('[{}] execution exception: "{}"'.format(service.__name__, e))
+            raise e
+
+        logger.debug('[{}] result: {}'.format(service.__name__, result))
+        logger.debug('[{}] end'.format(service.__name__))
+        return result
+
+    return wrapper
+
+
+@service_decorator
 def get_default_context(node_id: str = None) -> Dict:
     """
     Getting default context for every view.
@@ -22,6 +46,7 @@ def get_default_context(node_id: str = None) -> Dict:
     return context
 
 
+@service_decorator
 def get_cluster_members(node: PegaNode) -> List:
     """
     Return cluster members for node
@@ -40,6 +65,7 @@ def get_cluster_members(node: PegaNode) -> List:
     return cluster_members
 
 
+@service_decorator
 def get_context_for_node(node_id: str) -> Dict:
     """
     Context for the node view
@@ -53,6 +79,7 @@ def get_context_for_node(node_id: str) -> Dict:
     return context
 
 
+@service_decorator
 def get_context_for_requestor(node_id: str, real_node_id: str, requestor_id: str) -> Dict:
     """
     Context for the single requestor view
@@ -71,6 +98,7 @@ def get_context_for_requestor(node_id: str, real_node_id: str, requestor_id: str
     return context
 
 
+@service_decorator
 def take_action_on_requestor(node_id: str, real_node_id: str, requestor_id: str, action: str) -> str:
     """
     Taking action on requestor: stop or interupt
@@ -78,11 +106,13 @@ def take_action_on_requestor(node_id: str, real_node_id: str, requestor_id: str,
     node: PegaNode = get_default_context(node_id)['node']
     try:
         data = pegaapi.requestor(node.url, node.login, node.password, real_node_id, requestor_id, action)
-        return data.json()['data']['result'][0]['status']
+        status = data.json()['data']['result'][0]['status']
+        return status
     except Exception as e:
         raise PegaAPIException(str(e), str(node), 'requestors')
 
 
+@service_decorator
 def get_context_for_requestors(node_id: str, real_node_id: str = None):
     """
     Context for the list of requestors view
@@ -113,6 +143,7 @@ def get_context_for_requestors(node_id: str, real_node_id: str = None):
     return context
 
 
+@service_decorator
 def get_context_for_agent(node_id: str, real_node_id: str, agent_id: str) -> Dict:
     """
         Context for the single agent view
@@ -131,6 +162,7 @@ def get_context_for_agent(node_id: str, real_node_id: str, agent_id: str) -> Dic
     return context
 
 
+@service_decorator
 def take_action_on_agent(node_id: str, real_node_id: str, agent_id: str, action: str) -> str:
     """
     Taking action on agent: stop, start or restart
@@ -143,6 +175,7 @@ def take_action_on_agent(node_id: str, real_node_id: str, agent_id: str, action:
         raise PegaAPIException(str(e), str(node), 'agents')
 
 
+@service_decorator
 def get_context_for_agents(node_id: str) -> Dict:
     """
     Context for the list of agents view

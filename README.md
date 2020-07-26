@@ -42,9 +42,15 @@ Then you can access you node on home page http://0.0.0.0:8000/
 ## Settings
 All project wide settings should be done through environment variables
 
+### Common settings
 - `PISMA_PEGAAPI_TIMEOUT` - timeout for PegaAPI services. Default is `5`
 - `PISMA_DJANGO_SECRET_KEY` - Django secret key. Default is `SECRET_KEY`. You **must** change it, if you use PISMA with production environments
 
+### Logging level settings
+- `PISMA_DJANGO_ROOT_LOGGING_LEVEL` - root logging level setting. Default is `ERROR`. Sends logs to `logs/errors.log` and console
+- `PISMA_DJANGO_PISMA_LOGGING_LEVEL` - PISMA logging level setting. Default is `INFO`. Sends logs to `logs/pisma.log` and console
+- `PISMA_DJANGO_CONSOLE_LOGGING_LEVEL` - console logging level setting. Default is `WARNING`. Doesn't print messages with logging evel lower then its
+- `PISMA_DJANGO_FILE_LOGGING_LEVEL` - `logs/pisma.log` logging level setting. Default is `INFO`. Doesn't print messages with logging evel lower then its
 
 ## Technologies
 - Web framework: Django https://www.djangoproject.com/

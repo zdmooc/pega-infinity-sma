@@ -1,8 +1,14 @@
 echo Create virtual env
 call python -m venv venv
 ​
+echo Make logs directory
+call mkdir logs
+
 echo Activate virtual env
 call venv\Scripts\activate.bat
+
+echo Update pip
+call venv\Scripts\pip install --upgrade pip
 ​
 echo Install dependences
 call venv\Scripts\pip install -r requirements.txt
