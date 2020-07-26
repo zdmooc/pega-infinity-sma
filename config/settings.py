@@ -10,10 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('PISMA_DJANGO_SECRET_KEY', 'SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if os.getenv('PISMA_DJANGO_DEBUG', 'False') == 'True':
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = bool(os.getenv('PISMA_DJANGO_DEBUG', 'False') == 'True')
 
 ALLOWED_HOSTS = [
     '*'
