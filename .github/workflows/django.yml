@@ -23,7 +23,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install Applicationa
       run: |
-        . scripts/init.sh
+        mkdir logs
+        pip3 install --upgrade pip
+        pip3 install -r requirements.txt
+        python3 manage.py migrate
     - name: Run Tests
       run: |
         python manage.py test
