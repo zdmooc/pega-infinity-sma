@@ -1,4 +1,6 @@
 from typing import List
+from string import ascii_letters
+from random import choices
 
 from django.test import TestCase
 from django.urls import reverse
@@ -6,6 +8,10 @@ from django.contrib.auth.models import User
 
 from pisma.models import PegaNode
 from pisma.views.services import get_default_context
+
+
+# Random password for test with login
+PASSWORD = choices(ascii_letters, k=5)
 
 
 def populate_nodes() -> None:
@@ -91,10 +97,10 @@ class LoginTestCases(TestCase):
     """
 
     def setUp(self) -> None:
-        self.user = User.objects.create_user(username='pega', password='rules')
+        self.user = User.objects.create_user(username='pega', password=PASSWORD)
 
     def test_login(self) -> None:
-        self.client.login(username='pega', password='rules')
+        self.client.login(username='pega', password=PASSWORD)
         response = self.client.get(reverse('pisma:index'))
         self.assertEqual(response.status_code, 200)
 
@@ -105,8 +111,8 @@ class LogoutTestCases(TestCase):
     """
 
     def setUp(self) -> None:
-        self.user = User.objects.create_user(username='pega', password='rules')
-        self.client.login(username='pega', password='rules')
+        self.user = User.objects.create_user(username='pega', password=PASSWORD)
+        self.client.login(username='pega', password=PASSWORD)
 
     def test_logout(self) -> None:
         response = self.client.get(reverse('pisma:index'))
@@ -124,8 +130,8 @@ class PismaIndexViewTestCases(TestCase):
 
     def setUp(self) -> None:
         populate_nodes()
-        self.user = User.objects.create_user(username='pega', password='rules')
-        self.client.login(username='pega', password='rules')
+        self.user = User.objects.create_user(username='pega', password=PASSWORD)
+        self.client.login(username='pega', password=PASSWORD)
 
     def test_index_view(self) -> None:
         """
