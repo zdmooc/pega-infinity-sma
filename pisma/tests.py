@@ -73,4 +73,3 @@ class PegaNodeTestCase(TestCase):
             context = get_default_context(node_id=node.id)
             self.assertIn(node, context['nodes'])
             self.assertEqual(node, context['node'])
-
