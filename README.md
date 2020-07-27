@@ -50,8 +50,8 @@ All project wide settings should be done through environment variables
 ### Logging level settings
 - `PISMA_DJANGO_ROOT_LOGGING_LEVEL` - root logging level setting. Default is `ERROR`. Sends logs to `logs/errors.log` and console
 - `PISMA_DJANGO_PISMA_LOGGING_LEVEL` - PISMA logging level setting. Default is `INFO`. Sends logs to `logs/pisma.log` and console
-- `PISMA_DJANGO_CONSOLE_LOGGING_LEVEL` - console logging level setting. Default is `WARNING`. Doesn't print messages with logging evel lower then its
-- `PISMA_DJANGO_FILE_LOGGING_LEVEL` - `logs/pisma.log` logging level setting. Default is `INFO`. Doesn't print messages with logging evel lower then its
+- `PISMA_DJANGO_CONSOLE_LOGGING_LEVEL` - console logging level setting. Default is `WARNING`. Doesn't print messages with logging level lower then its
+- `PISMA_DJANGO_FILE_LOGGING_LEVEL` - `logs/pisma.log` logging level setting. Default is `INFO`. Doesn't print messages with logging level lower then its
 
 ## Technologies
 - Web framework: Django https://www.djangoproject.com/
