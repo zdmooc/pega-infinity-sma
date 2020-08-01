@@ -8,7 +8,7 @@ echo Activate virtual env
 call venv\Scripts\activate.bat
 
 echo Update pip
-call venv\Scripts\pip install --upgrade pip
+call venv\Scripts\pip install --upgrade pip --user
 ​
 echo Install dependences
 call venv\Scripts\pip install -r requirements.txt
