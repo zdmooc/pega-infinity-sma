@@ -8,10 +8,10 @@ echo Activate virtual env
 call venv\Scripts\activate.bat
 
 echo Update pip
-call venv\Scripts\pip install --upgrade pip --user
+call python -m pip install --upgrade pip
 ​
 echo Install dependences
-call venv\Scripts\pip install -r requirements.txt
+call python -m pip install -r requirements.txt
 ​
 echo Run migrations
 call python manage.py migrate
