@@ -18,6 +18,9 @@ pip3 install -r requirements.txt
 echo Run migrations
 python3 manage.py migrate
 
+echo Collect static files
+python3 manage.py collectstatic
+
 echo Create superuser
 python3 manage.py createsuperuser
 

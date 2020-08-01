@@ -15,6 +15,9 @@ call venv\Scripts\pip install -r requirements.txt
 ​
 echo Run migrations
 call python manage.py migrate
+
+echo Collect static files
+call python manage.py collectstatic
 ​
 echo Create superuser
 call python manage.py createsuperuser
