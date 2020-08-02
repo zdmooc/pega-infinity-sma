@@ -3,7 +3,7 @@ echo Activate virtual env
 . venv/bin/activate
 
 echo Run server
-gunicorn config.wsgi
+python server.py
 
 echo Deactivate virtual env
 deactivate
