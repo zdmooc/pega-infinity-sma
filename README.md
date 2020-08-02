@@ -48,6 +48,10 @@ All project wide settings should be done through environment variables
 - `PISMA_DJANGO_DEBUG` - debug mode for Django. Default is `False`
 - `PISMA_DJANGO_SECRET_KEY` - Django secret key. Default is `SECRET_KEY`. You **must** change it, if you use PISMA with production environments
 
+### Server settings
+- `PISMA_HOST` - host to run application server. Default is `0.0.0.0`
+- `PISMA_PORT` - port to run application server. Default is `8000`
+
 ### Logging level settings
 - `PISMA_DJANGO_ROOT_LOGGING_LEVEL` - root logging level setting. Default is `ERROR`. Sends logs to `logs/errors.log` and console
 - `PISMA_DJANGO_PISMA_LOGGING_LEVEL` - PISMA logging level setting. Default is `INFO`. Sends logs to `logs/pisma.log` and console
