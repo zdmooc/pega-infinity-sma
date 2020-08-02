@@ -10,7 +10,6 @@ from django.contrib.contenttypes.models import ContentType
 from pisma.models import PegaNode
 from pisma.views.services import get_default_context
 
-
 # Random password for test with login
 PASSWORD = choices(ascii_letters, k=5)
 
@@ -70,6 +69,20 @@ class PegaNodeTestCases(TestCase):
             if node.name == 'PRODUCTION':
                 self.assertEqual(node.production_level, 5)
                 continue
+
+    def test_created_permissions(self) -> None:
+        """
+        Test that permission was created for each node
+        """
+        all_nodes: List[PegaNode] = PegaNode.objects.all()
+
+        for node in all_nodes:
+            self.assertIsNotNone(
+                Permission.objects.get(
+                    content_type=ContentType.objects.get_for_model(PegaNode),
+                    codename='can_access_{}'.format(node.pk)
+                )
+            )
 
     def test_get_default_context(self) -> None:
         """
