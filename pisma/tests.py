@@ -4,7 +4,8 @@ from random import choices
 
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from pisma.models import PegaNode
 from pisma.views.services import get_default_context
@@ -31,6 +32,7 @@ class PegaNodeTestCases(TestCase):
     """
 
     def setUp(self) -> None:
+        # Populate nodes
         populate_nodes()
 
     def test_names(self) -> None:
@@ -97,6 +99,7 @@ class LoginTestCases(TestCase):
     """
 
     def setUp(self) -> None:
+        # Create user
         self.user = User.objects.create_user(username='pega', password=PASSWORD)
 
     def test_login(self) -> None:
@@ -111,7 +114,10 @@ class LogoutTestCases(TestCase):
     """
 
     def setUp(self) -> None:
+        # Create user
         self.user = User.objects.create_user(username='pega', password=PASSWORD)
+
+        # Login user
         self.client.login(username='pega', password=PASSWORD)
 
     def test_logout(self) -> None:
@@ -129,8 +135,18 @@ class PismaIndexViewTestCases(TestCase):
     """
 
     def setUp(self) -> None:
+        # Populate nodes
         populate_nodes()
+
+        # Create user
         self.user = User.objects.create_user(username='pega', password=PASSWORD)
+
+        # Set user permission to access all PegaNode objects
+        self.user.user_permissions.set(
+            [perm.pk for perm in Permission.objects.filter(content_type=ContentType.objects.get_for_model(PegaNode))]
+        )
+
+        # Login user
         self.client.login(username='pega', password=PASSWORD)
 
     def test_index_view(self) -> None:
@@ -143,9 +159,5 @@ class PismaIndexViewTestCases(TestCase):
 
         self.assertQuerysetEqual(
             list(response.context['nodes']),
-            ['<PegaNode: SANDBOX>',
-             '<PegaNode: DEVELOPMENT>',
-             '<PegaNode: QA>',
-             '<PegaNode: PRELIVE>',
-             '<PegaNode: PRODUCTION>']
+            ['<PegaNode: {}>'.format(node.name) for node in all_nodes]
         )
