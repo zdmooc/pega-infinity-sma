@@ -11,7 +11,7 @@ from pisma.models import PegaNode
 from pisma.views.services import get_default_context
 
 # Random password for test with login
-PASSWORD = choices(ascii_letters, k=5)
+PASSWORD = ''.join(choices(ascii_letters, k=5))
 
 
 def populate_nodes() -> None:
@@ -174,3 +174,36 @@ class PismaIndexViewTestCases(TestCase):
             list(response.context['nodes']),
             ['<PegaNode: {}>'.format(node.name) for node in all_nodes]
         )
+
+
+class PegaNodePermissionsTestCases(TestCase):
+    """
+    Test PegaNode permissions
+    """
+
+    def setUp(self) -> None:
+        # Populate nodes
+        populate_nodes()
+
+    def test_permissions_existence(self):
+        """
+        After PegaNode creation, permission should be created too
+        """
+        content_type = ContentType.objects.get_for_model(PegaNode)
+        all_nodes: List[PegaNode] = PegaNode.objects.all()
+
+        for node in all_nodes:
+            permissions = Permission.objects.filter(content_type=content_type, codename='can_access_{}'.format(node.pk))
+            self.assertEqual(len(permissions), 1)
+
+    def test_permission_deletion(self):
+        """
+        After PegaNode deletion, permission should be deleted too
+        """
+        content_type = ContentType.objects.get_for_model(PegaNode)
+        all_nodes: List[PegaNode] = PegaNode.objects.all()
+        PegaNode.objects.all().delete()
+
+        for node in all_nodes:
+            permissions = Permission.objects.filter(content_type=content_type, codename='can_access_{}'.format(node.pk))
+            self.assertEqual(len(permissions), 0)
