@@ -11,7 +11,7 @@ from pisma.views.services import get_default_context
 
 
 # Random password for test with login
-PASSWORD = choices(ascii_letters, k=5)
+PASSWORD = ''.join(choices(ascii_letters, k=5))
 
 
 def populate_nodes() -> None:
