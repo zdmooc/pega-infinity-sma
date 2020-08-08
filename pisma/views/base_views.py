@@ -27,20 +27,33 @@ def basic_view(template: str):
                 ),
                 request=request
             )
-            try:
-                logger.info(
-                    '[basic_view.decorator.wrapper] {} view accessed. request: {}'.format(actual_view.__name__, request),
-                    request=request)
-                if node_id:
-                    context = actual_view(request, node_id, **kwargs)
-                else:
-                    context = actual_view(request, **kwargs)
-            except Exception as e:
-                logger.warning(
-                    '[basic_view.decorator.wrapper] {} view execution exception: "{}"'.format(actual_view.__name__, e),
-                    request=request)
+
+            if node_id and request.user.has_perm('pisma.can_access_{}'.format(node_id)) or not node_id:
+                try:
+                    logger.info(
+                        '[basic_view.decorator.wrapper] {} view accessed. request: {}'.format(actual_view.__name__, request),
+                        request=request)
+                    if node_id:
+                        context = actual_view(request, node_id, **kwargs)
+                    else:
+                        context = actual_view(request, **kwargs)
+                except Exception as e:
+                    logger.warning(
+                        '[basic_view.decorator.wrapper] {} view execution exception: "{}"'.format(actual_view.__name__, e),
+                        request=request)
+                    context = get_default_context(node_id)
+                    messages.error(request, e)
+            else:
                 context = get_default_context(node_id)
-                messages.error(request, e)
+                messages.error(request, 'Access denied')
+
+            if 'nodes' in context.keys():
+                context['nodes'] = [node for node in context['nodes']
+                                    if request.user.has_perm('pisma.can_access_{}'.format(node.pk))]
+
+            if 'node' in context.keys():
+                if context['node'] not in context['nodes']:
+                    del context['node']
 
             logger.debug('[basic_view.decorator.wrapper] end', request=request)
             return render(request, template, context)
@@ -54,15 +67,19 @@ def action_view(actual_action: Callable):
     """
     Decorator for action views
     """
-    def wrapper(request: HttpRequest, *args, **kwargs):
-        try:
-            logger.info(
-                '[action_view.wrapper] {} view accessed. request: {}, agrs: {}, kwargs: {}'.format(
-                    actual_action.__name__, request, args, kwargs))
-            result = actual_action(request, *args, **kwargs)
-            return result
-        except Exception as e:
-            logger.warning('[action_view.wrapper] {} view execution exception: "{}"'.format(actual_action.__name__, e))
+
+    def wrapper(request: HttpRequest, node_id: str = None, *args, **kwargs):
+        if node_id and request.user.has_perm('pisma.can_access_{}'.format(node_id)) or not node_id:
+            try:
+                logger.info(
+                    '[action_view.wrapper] {} view accessed. request: {}, agrs: {}, kwargs: {}'.format(
+                        actual_action.__name__, request, args, kwargs))
+                result = actual_action(request, *args, **kwargs)
+                return result
+            except Exception as e:
+                logger.warning('[action_view.wrapper] {} view execution exception: "{}"'.format(actual_action.__name__, e))
+        else:
+            messages.error(request, 'Access denied')
 
     return wrapper
 

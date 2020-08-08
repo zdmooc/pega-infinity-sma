@@ -4,11 +4,11 @@ from random import choices
 
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from pisma.models import PegaNode
 from pisma.views.services import get_default_context
-
 
 # Random password for test with login
 PASSWORD = ''.join(choices(ascii_letters, k=5))
@@ -31,6 +31,7 @@ class PegaNodeTestCases(TestCase):
     """
 
     def setUp(self) -> None:
+        # Populate nodes
         populate_nodes()
 
     def test_names(self) -> None:
@@ -69,6 +70,20 @@ class PegaNodeTestCases(TestCase):
                 self.assertEqual(node.production_level, 5)
                 continue
 
+    def test_created_permissions(self) -> None:
+        """
+        Test that permission was created for each node
+        """
+        all_nodes: List[PegaNode] = PegaNode.objects.all()
+
+        for node in all_nodes:
+            self.assertIsNotNone(
+                Permission.objects.get(
+                    content_type=ContentType.objects.get_for_model(PegaNode),
+                    codename='can_access_{}'.format(node.pk)
+                )
+            )
+
     def test_get_default_context(self) -> None:
         """
         Test get_default_context() view service without node_id param
@@ -97,6 +112,7 @@ class LoginTestCases(TestCase):
     """
 
     def setUp(self) -> None:
+        # Create user
         self.user = User.objects.create_user(username='pega', password=PASSWORD)
 
     def test_login(self) -> None:
@@ -111,7 +127,10 @@ class LogoutTestCases(TestCase):
     """
 
     def setUp(self) -> None:
+        # Create user
         self.user = User.objects.create_user(username='pega', password=PASSWORD)
+
+        # Login user
         self.client.login(username='pega', password=PASSWORD)
 
     def test_logout(self) -> None:
@@ -129,8 +148,18 @@ class PismaIndexViewTestCases(TestCase):
     """
 
     def setUp(self) -> None:
+        # Populate nodes
         populate_nodes()
+
+        # Create user
         self.user = User.objects.create_user(username='pega', password=PASSWORD)
+
+        # Set user permission to access all PegaNode objects
+        self.user.user_permissions.set(
+            [perm.pk for perm in Permission.objects.filter(content_type=ContentType.objects.get_for_model(PegaNode))]
+        )
+
+        # Login user
         self.client.login(username='pega', password=PASSWORD)
 
     def test_index_view(self) -> None:
@@ -143,9 +172,38 @@ class PismaIndexViewTestCases(TestCase):
 
         self.assertQuerysetEqual(
             list(response.context['nodes']),
-            ['<PegaNode: SANDBOX>',
-             '<PegaNode: DEVELOPMENT>',
-             '<PegaNode: QA>',
-             '<PegaNode: PRELIVE>',
-             '<PegaNode: PRODUCTION>']
+            ['<PegaNode: {}>'.format(node.name) for node in all_nodes]
         )
+
+
+class PegaNodePermissionsTestCases(TestCase):
+    """
+    Test PegaNode permissions
+    """
+
+    def setUp(self) -> None:
+        # Populate nodes
+        populate_nodes()
+
+    def test_permissions_existence(self):
+        """
+        After PegaNode creation, permission should be created too
+        """
+        content_type = ContentType.objects.get_for_model(PegaNode)
+        all_nodes: List[PegaNode] = PegaNode.objects.all()
+
+        for node in all_nodes:
+            permissions = Permission.objects.filter(content_type=content_type, codename='can_access_{}'.format(node.pk))
+            self.assertEqual(len(permissions), 1)
+
+    def test_permission_deletion(self):
+        """
+        After PegaNode deletion, permission should be deleted too
+        """
+        content_type = ContentType.objects.get_for_model(PegaNode)
+        all_nodes: List[PegaNode] = PegaNode.objects.all()
+        PegaNode.objects.all().delete()
+
+        for node in all_nodes:
+            permissions = Permission.objects.filter(content_type=content_type, codename='can_access_{}'.format(node.pk))
+            self.assertEqual(len(permissions), 0)

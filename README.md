@@ -40,6 +40,9 @@ To add new node:
  
 Then you can access you node on home page http://0.0.0.0:8000/
 
+## Node access permissions
+To access node with *not* super user you should add permission with name `Can access {PegaNode.name}` to this user or to one of his groups
+
 ## Settings
 All project wide settings should be done through environment variables
 
