@@ -22,40 +22,53 @@ def basic_view(template: str):
     def decorator(actual_view: Callable):
         def wrapper(request: HttpRequest, node_id: str = None, **kwargs):
             logger.debug(
-                '[basic_view.decorator.wrapper] start. template: {}. actual_view: {}. request: {}. node_id: {}. kwargs: {}'.format(
+                "[basic_view.decorator.wrapper] start. template: {}. actual_view: {}. request: {}. node_id: {}. kwargs: {}".format(
                     template, actual_view, request, node_id, kwargs
                 ),
-                request=request
+                request=request,
             )
 
-            if node_id and request.user.has_perm('pisma.can_access_{}'.format(node_id)) or not node_id:
+            if (
+                node_id
+                and request.user.has_perm("pisma.can_access_{}".format(node_id))
+                or not node_id
+            ):
                 try:
                     logger.info(
-                        '[basic_view.decorator.wrapper] {} view accessed. request: {}'.format(actual_view.__name__, request),
-                        request=request)
+                        "[basic_view.decorator.wrapper] {} view accessed. request: {}".format(
+                            actual_view.__name__, request
+                        ),
+                        request=request,
+                    )
                     if node_id:
                         context = actual_view(request, node_id, **kwargs)
                     else:
                         context = actual_view(request, **kwargs)
                 except Exception as e:
                     logger.warning(
-                        '[basic_view.decorator.wrapper] {} view execution exception: "{}"'.format(actual_view.__name__, e),
-                        request=request)
+                        '[basic_view.decorator.wrapper] {} view execution exception: "{}"'.format(
+                            actual_view.__name__, e
+                        ),
+                        request=request,
+                    )
                     context = get_default_context(node_id)
                     messages.error(request, e)
             else:
                 context = get_default_context(node_id)
-                messages.error(request, 'Access denied')
+                messages.error(request, "Access denied")
 
-            if 'nodes' in context.keys():
-                context['nodes'] = [node for node in context['nodes']
-                                    if request.user.has_perm('pisma.can_access_{}'.format(node.pk))]
+            if "nodes" in context.keys():
+                context["nodes"] = [
+                    node
+                    for node in context["nodes"]
+                    if request.user.has_perm("pisma.can_access_{}".format(node.pk))
+                ]
 
-            if 'node' in context.keys():
-                if context['node'] not in context['nodes']:
-                    del context['node']
+            if "node" in context.keys():
+                if context["node"] not in context["nodes"]:
+                    del context["node"]
 
-            logger.debug('[basic_view.decorator.wrapper] end', request=request)
+            logger.debug("[basic_view.decorator.wrapper] end", request=request)
             return render(request, template, context)
 
         return wrapper
@@ -69,23 +82,33 @@ def action_view(actual_action: Callable):
     """
 
     def wrapper(request: HttpRequest, node_id: str = None, *args, **kwargs):
-        if node_id and request.user.has_perm('pisma.can_access_{}'.format(node_id)) or not node_id:
+        if (
+            node_id
+            and request.user.has_perm("pisma.can_access_{}".format(node_id))
+            or not node_id
+        ):
             try:
                 logger.info(
-                    '[action_view.wrapper] {} view accessed. request: {}, agrs: {}, kwargs: {}'.format(
-                        actual_action.__name__, request, args, kwargs))
+                    "[action_view.wrapper] {} view accessed. request: {}, agrs: {}, kwargs: {}".format(
+                        actual_action.__name__, request, args, kwargs
+                    )
+                )
                 result = actual_action(request, *args, **kwargs)
                 return result
             except Exception as e:
-                logger.warning('[action_view.wrapper] {} view execution exception: "{}"'.format(actual_action.__name__, e))
+                logger.warning(
+                    '[action_view.wrapper] {} view execution exception: "{}"'.format(
+                        actual_action.__name__, e
+                    )
+                )
         else:
-            messages.error(request, 'Access denied')
+            messages.error(request, "Access denied")
 
     return wrapper
 
 
 @login_required
-@basic_view(template='pisma/base_index.html')
+@basic_view(template="pisma/base_index.html")
 def index(request: HttpRequest):
     """
     Home page
@@ -94,7 +117,7 @@ def index(request: HttpRequest):
 
 
 @login_required
-@basic_view(template='pisma/base_node.html')
+@basic_view(template="pisma/base_node.html")
 def node(request: HttpRequest, node_id: str):
     """
     Single node view
@@ -103,25 +126,25 @@ def node(request: HttpRequest, node_id: str):
 
 
 def login_view(request: HttpRequest):
-    logger.info('[login_view] accessed. request: {}'.format(request))
+    logger.info("[login_view] accessed. request: {}".format(request))
 
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse('pisma:index'))
-        messages.error(request, 'Invalid credentials')
-        return render(request, 'pisma/login.html')
+            return HttpResponseRedirect(reverse("pisma:index"))
+        messages.error(request, "Invalid credentials")
+        return render(request, "pisma/login.html")
 
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('pisma:index'))
+        return HttpResponseRedirect(reverse("pisma:index"))
 
-    return render(request, 'pisma/login.html')
+    return render(request, "pisma/login.html")
 
 
 def logout_view(request: HttpRequest):
-    logger.info('[logout_view] accessed. request: {}'.format(request))
+    logger.info("[logout_view] accessed. request: {}".format(request))
     logout(request)
-    return HttpResponseRedirect(reverse('pisma:index'))
+    return HttpResponseRedirect(reverse("pisma:index"))
