@@ -7,4 +7,6 @@ class PegaAPIException(Exception):
         super().__init__(self.message)
 
     def __str__(self):
-        return 'Node: {}; Service: {}; message: {}'.format(self.node, self.service, self.message)
+        return "Node: {}; Service: {}; message: {}".format(
+            self.node, self.service, self.message
+        )

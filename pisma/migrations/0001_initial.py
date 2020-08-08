@@ -7,19 +7,37 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='PegaNode',
+            name="PegaNode",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('url', models.CharField(max_length=200)),
-                ('production_level', models.IntegerField(choices=[(1, 'Sandbox'), (2, 'Development'), (3, 'Qa'), (4, 'Prelive'), (5, 'Production')])),
-                ('login', models.CharField(max_length=200)),
-                ('password', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("url", models.CharField(max_length=200)),
+                (
+                    "production_level",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Sandbox"),
+                            (2, "Development"),
+                            (3, "Qa"),
+                            (4, "Prelive"),
+                            (5, "Production"),
+                        ]
+                    ),
+                ),
+                ("login", models.CharField(max_length=200)),
+                ("password", models.CharField(max_length=200)),
             ],
         ),
     ]

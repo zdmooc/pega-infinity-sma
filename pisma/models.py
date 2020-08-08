@@ -33,19 +33,25 @@ def peganode_post_save(sender, instance: PegaNode, created: bool, *args, **kwarg
     """
     When new PegaNode created - create permission associated with it
     """
-    logger.debug('[peganode_post_save] start. sender: {}. instance: {}. created: {}. args: {}. kwargs: {}'.format(
-        sender, instance, created, args, kwargs
-    ))
+    logger.debug(
+        "[peganode_post_save] start. sender: {}. instance: {}. created: {}. args: {}. kwargs: {}".format(
+            sender, instance, created, args, kwargs
+        )
+    )
     if created:
         content_type = ContentType.objects.get_for_model(sender)
         permission = Permission.objects.create(
-            codename='can_access_{}'.format(instance.pk),
-            name='Can access {}'.format(instance.name),
+            codename="can_access_{}".format(instance.pk),
+            name="Can access {}".format(instance.name),
             content_type=content_type,
         )
-        logger.info('[peganode_post_save] PegaNode {} and permission {} were created'.format(instance, permission))
+        logger.info(
+            "[peganode_post_save] PegaNode {} and permission {} were created".format(
+                instance, permission
+            )
+        )
 
-    logger.debug('[peganode_post_save] end')
+    logger.debug("[peganode_post_save] end")
 
 
 @receiver(post_delete, sender=PegaNode)
@@ -53,15 +59,20 @@ def peganode_post_delete(sender, instance: PegaNode, *args, **kwargs):
     """
     When PegaNode deleted - delete permission associated with it
     """
-    logger.debug('[peganode_post_delete] start. sender: {}. instance: {}. args: {}. kwargs: {}'.format(
-        sender, instance, args, kwargs
-    ))
+    logger.debug(
+        "[peganode_post_delete] start. sender: {}. instance: {}. args: {}. kwargs: {}".format(
+            sender, instance, args, kwargs
+        )
+    )
     content_type = ContentType.objects.get_for_model(sender)
     permissions = Permission.objects.filter(
-        codename='can_access_{}'.format(instance.pk),
-        content_type=content_type,
+        codename="can_access_{}".format(instance.pk), content_type=content_type,
     ).delete()
 
-    logger.info('[peganode_post_delete] PegaNode {} and permission {} were deleted'.format(instance, permissions))
+    logger.info(
+        "[peganode_post_delete] PegaNode {} and permission {} were deleted".format(
+            instance, permissions
+        )
+    )
 
-    logger.debug('[peganode_post_delete] end')
+    logger.debug("[peganode_post_delete] end")

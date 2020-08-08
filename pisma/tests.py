@@ -11,18 +11,26 @@ from pisma.models import PegaNode
 from pisma.views.services import get_default_context
 
 # Random password for test with login
-PASSWORD = ''.join(choices(ascii_letters, k=5))
+PASSWORD = "".join(choices(ascii_letters, k=5))
 
 
 def populate_nodes() -> None:
     """
     Populate PegaNodes for test cases
     """
-    PegaNode.objects.create(name='SANDBOX', production_level=PegaNode.ProductionLevels.SANDBOX)
-    PegaNode.objects.create(name='DEVELOPMENT', production_level=PegaNode.ProductionLevels.DEVELOPMENT)
-    PegaNode.objects.create(name='QA', production_level=PegaNode.ProductionLevels.QA)
-    PegaNode.objects.create(name='PRELIVE', production_level=PegaNode.ProductionLevels.PRELIVE)
-    PegaNode.objects.create(name='PRODUCTION', production_level=PegaNode.ProductionLevels.PRODUCTION)
+    PegaNode.objects.create(
+        name="SANDBOX", production_level=PegaNode.ProductionLevels.SANDBOX
+    )
+    PegaNode.objects.create(
+        name="DEVELOPMENT", production_level=PegaNode.ProductionLevels.DEVELOPMENT
+    )
+    PegaNode.objects.create(name="QA", production_level=PegaNode.ProductionLevels.QA)
+    PegaNode.objects.create(
+        name="PRELIVE", production_level=PegaNode.ProductionLevels.PRELIVE
+    )
+    PegaNode.objects.create(
+        name="PRODUCTION", production_level=PegaNode.ProductionLevels.PRODUCTION
+    )
 
 
 class PegaNodeTestCases(TestCase):
@@ -50,23 +58,23 @@ class PegaNodeTestCases(TestCase):
         all_nodes: List[PegaNode] = PegaNode.objects.all()
 
         for node in all_nodes:
-            if node.name == 'SANDBOX':
+            if node.name == "SANDBOX":
                 self.assertEqual(node.production_level, 1)
                 continue
 
-            if node.name == 'DEVELOPMENT':
+            if node.name == "DEVELOPMENT":
                 self.assertEqual(node.production_level, 2)
                 continue
 
-            if node.name == 'QA':
+            if node.name == "QA":
                 self.assertEqual(node.production_level, 3)
                 continue
 
-            if node.name == 'PRELIVE':
+            if node.name == "PRELIVE":
                 self.assertEqual(node.production_level, 4)
                 continue
 
-            if node.name == 'PRODUCTION':
+            if node.name == "PRODUCTION":
                 self.assertEqual(node.production_level, 5)
                 continue
 
@@ -80,7 +88,7 @@ class PegaNodeTestCases(TestCase):
             self.assertIsNotNone(
                 Permission.objects.get(
                     content_type=ContentType.objects.get_for_model(PegaNode),
-                    codename='can_access_{}'.format(node.pk)
+                    codename="can_access_{}".format(node.pk),
                 )
             )
 
@@ -92,7 +100,7 @@ class PegaNodeTestCases(TestCase):
 
         context = get_default_context()
         for node in all_nodes:
-            self.assertIn(node, context['nodes'])
+            self.assertIn(node, context["nodes"])
 
     def test_get_default_context_for_node(self) -> None:
         """
@@ -102,8 +110,8 @@ class PegaNodeTestCases(TestCase):
 
         for node in all_nodes:
             context = get_default_context(node_id=node.id)
-            self.assertIn(node, context['nodes'])
-            self.assertEqual(node, context['node'])
+            self.assertIn(node, context["nodes"])
+            self.assertEqual(node, context["node"])
 
 
 class LoginTestCases(TestCase):
@@ -113,11 +121,11 @@ class LoginTestCases(TestCase):
 
     def setUp(self) -> None:
         # Create user
-        self.user = User.objects.create_user(username='pega', password=PASSWORD)
+        self.user = User.objects.create_user(username="pega", password=PASSWORD)
 
     def test_login(self) -> None:
-        self.client.login(username='pega', password=PASSWORD)
-        response = self.client.get(reverse('pisma:index'))
+        self.client.login(username="pega", password=PASSWORD)
+        response = self.client.get(reverse("pisma:index"))
         self.assertEqual(response.status_code, 200)
 
 
@@ -128,17 +136,17 @@ class LogoutTestCases(TestCase):
 
     def setUp(self) -> None:
         # Create user
-        self.user = User.objects.create_user(username='pega', password=PASSWORD)
+        self.user = User.objects.create_user(username="pega", password=PASSWORD)
 
         # Login user
-        self.client.login(username='pega', password=PASSWORD)
+        self.client.login(username="pega", password=PASSWORD)
 
     def test_logout(self) -> None:
-        response = self.client.get(reverse('pisma:index'))
+        response = self.client.get(reverse("pisma:index"))
         self.assertEqual(response.status_code, 200)
 
         self.client.logout()
-        response = self.client.get(reverse('pisma:index'))
+        response = self.client.get(reverse("pisma:index"))
         self.assertEqual(response.status_code, 302)
 
 
@@ -152,15 +160,20 @@ class PismaIndexViewTestCases(TestCase):
         populate_nodes()
 
         # Create user
-        self.user = User.objects.create_user(username='pega', password=PASSWORD)
+        self.user = User.objects.create_user(username="pega", password=PASSWORD)
 
         # Set user permission to access all PegaNode objects
         self.user.user_permissions.set(
-            [perm.pk for perm in Permission.objects.filter(content_type=ContentType.objects.get_for_model(PegaNode))]
+            [
+                perm.pk
+                for perm in Permission.objects.filter(
+                    content_type=ContentType.objects.get_for_model(PegaNode)
+                )
+            ]
         )
 
         # Login user
-        self.client.login(username='pega', password=PASSWORD)
+        self.client.login(username="pega", password=PASSWORD)
 
     def test_index_view(self) -> None:
         """
@@ -168,11 +181,11 @@ class PismaIndexViewTestCases(TestCase):
         """
         all_nodes: List[PegaNode] = PegaNode.objects.all()
 
-        response = self.client.get(reverse('pisma:index'))
+        response = self.client.get(reverse("pisma:index"))
 
         self.assertQuerysetEqual(
-            list(response.context['nodes']),
-            ['<PegaNode: {}>'.format(node.name) for node in all_nodes]
+            list(response.context["nodes"]),
+            ["<PegaNode: {}>".format(node.name) for node in all_nodes],
         )
 
 
@@ -193,7 +206,9 @@ class PegaNodePermissionsTestCases(TestCase):
         all_nodes: List[PegaNode] = PegaNode.objects.all()
 
         for node in all_nodes:
-            permissions = Permission.objects.filter(content_type=content_type, codename='can_access_{}'.format(node.pk))
+            permissions = Permission.objects.filter(
+                content_type=content_type, codename="can_access_{}".format(node.pk)
+            )
             self.assertEqual(len(permissions), 1)
 
     def test_permission_deletion(self):
@@ -205,5 +220,7 @@ class PegaNodePermissionsTestCases(TestCase):
         PegaNode.objects.all().delete()
 
         for node in all_nodes:
-            permissions = Permission.objects.filter(content_type=content_type, codename='can_access_{}'.format(node.pk))
+            permissions = Permission.objects.filter(
+                content_type=content_type, codename="can_access_{}".format(node.pk)
+            )
             self.assertEqual(len(permissions), 0)
