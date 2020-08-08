@@ -23,14 +23,7 @@ def requestors(url: str, login: str, password: str, node_id: str) -> Response:
     return data
 
 
-def requestor(
-    url: str,
-    login: str,
-    password: str,
-    node_id: str,
-    requestor_id: str,
-    action: str = None,
-) -> Response:
+def requestor(url: str, login: str, password: str, node_id: str, requestor_id: str, action: str = None,) -> Response:
     if action == "interrupt":
         data = requests.put(
             "{}/prweb/api/v1/nodes/{}/requestors/{}/interrupt".format(
