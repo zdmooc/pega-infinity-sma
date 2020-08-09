@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  black-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
