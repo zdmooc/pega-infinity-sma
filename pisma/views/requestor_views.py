@@ -62,13 +62,33 @@ def requestor_action(
         )
         messages.error(request, e)
         return HttpResponseRedirect(
-            reverse("pisma:requestor", args=(node_id, real_node_id, requestor_id,))
+            reverse(
+                "pisma:requestor",
+                args=(
+                    node_id,
+                    real_node_id,
+                    requestor_id,
+                ),
+            )
         )
 
     if action == "interrupt":
         return HttpResponseRedirect(
-            reverse("pisma:requestor", args=(node_id, real_node_id, requestor_id,))
+            reverse(
+                "pisma:requestor",
+                args=(
+                    node_id,
+                    real_node_id,
+                    requestor_id,
+                ),
+            )
         )
     return HttpResponseRedirect(
-        reverse("pisma:requestors_real", args=(node_id, real_node_id,))
+        reverse(
+            "pisma:requestors_real",
+            args=(
+                node_id,
+                real_node_id,
+            ),
+        )
     )

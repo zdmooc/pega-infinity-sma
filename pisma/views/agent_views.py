@@ -50,7 +50,14 @@ def agent_action(request: HttpRequest, node_id: str, real_node_id: str, agent_id
     else:
         messages.error(request, "Invalid action")
         return HttpResponseRedirect(
-            reverse("pisma:agent", args=(node_id, "all", agent_id,))
+            reverse(
+                "pisma:agent",
+                args=(
+                    node_id,
+                    "all",
+                    agent_id,
+                ),
+            )
         )
 
     try:
@@ -65,9 +72,23 @@ def agent_action(request: HttpRequest, node_id: str, real_node_id: str, agent_id
         )
         messages.error(request, e)
         return HttpResponseRedirect(
-            reverse("pisma:agent", args=(node_id, "all", agent_id,))
+            reverse(
+                "pisma:agent",
+                args=(
+                    node_id,
+                    "all",
+                    agent_id,
+                ),
+            )
         )
 
     return HttpResponseRedirect(
-        reverse("pisma:agent", args=(node_id, "all", agent_id,))
+        reverse(
+            "pisma:agent",
+            args=(
+                node_id,
+                "all",
+                agent_id,
+            ),
+        )
     )

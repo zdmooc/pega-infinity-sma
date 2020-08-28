@@ -160,7 +160,7 @@ def get_context_for_requestors(node_id: str, real_node_id: str = None):
 @service_decorator
 def get_context_for_agent(node_id: str, real_node_id: str, agent_id: str) -> Dict:
     """
-        Context for the single agent view
+    Context for the single agent view
     """
     context = get_default_context(node_id)
     node: PegaNode = context["node"]

@@ -66,7 +66,8 @@ def peganode_post_delete(sender, instance: PegaNode, *args, **kwargs):
     )
     content_type = ContentType.objects.get_for_model(sender)
     permissions = Permission.objects.filter(
-        codename="can_access_{}".format(instance.pk), content_type=content_type,
+        codename="can_access_{}".format(instance.pk),
+        content_type=content_type,
     ).delete()
 
     logger.info(
