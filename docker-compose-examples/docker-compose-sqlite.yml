@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    environment:
+      - PISMA_PORT=8888
+    command: python server.py
+    ports:
+      - "8888:8888"

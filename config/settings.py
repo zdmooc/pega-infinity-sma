@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -104,12 +105,26 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+SQL_ENGINE = os.getenv("PISMA_DJANGO_SQL_ENGINE", "django.db.backends.sqlite3")
+if SQL_ENGINE == "django.db.backends.sqlite3":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
     }
-}
+else:
+    DATABASE_URL = urlparse(os.getenv("PISMA_DATABASE_URL", ""))
+    DATABASES = {
+        "default": {
+            "ENGINE": SQL_ENGINE,
+            "NAME": DATABASE_URL.path[1:],
+            "USER": DATABASE_URL.username,
+            "PASSWORD": DATABASE_URL.password,
+            "HOST": DATABASE_URL.hostname,
+            "PORT": DATABASE_URL.port,
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    environment:
+      - PISMA_DJANGO_SQL_ENGINE=django.db.backends.postgresql
+      - PISMA_DATABASE_URL=postgres://your_db_user:your_db_pw@your_db_host/your_db
+      - PISMA_PORT=8888
+    command: python server.py
+    ports:
+      - "8888:8888"
