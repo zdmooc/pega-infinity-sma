@@ -3,6 +3,7 @@
 .idea/
 staticfiles/
 docker-compose.yml
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
