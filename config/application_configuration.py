@@ -6,6 +6,9 @@ class AppConfig:
     # Django settings
     PISMA_DJANGO_SECRET_KEY = os.getenv("PISMA_DJANGO_SECRET_KEY", "SECRET_KEY")
     PISMA_DJANGO_DEBUG = bool(os.getenv("PISMA_DJANGO_DEBUG", "False") == "True")
+    PISMA_DJANGO_SELF_SERVE_STATIC_FILES = bool(
+        os.getenv("PISMA_DJANGO_SELF_SERVE_STATIC_FILES", "True") == "True"
+    )
 
     # Loggings ettings
     PISMA_DJANGO_CONSOLE_LOGGING_LEVEL = os.getenv(

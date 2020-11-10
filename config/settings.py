@@ -163,9 +163,10 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
 
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+if AppConfig.PISMA_DJANGO_SELF_SERVE_STATIC_FILES:
+    # Simplified static file serving.
+    # https://warehouse.python.org/project/whitenoise/
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 LOGIN_URL = "/login/"
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
