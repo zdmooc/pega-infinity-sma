@@ -1,5 +1,6 @@
 import os
-from urllib.parse import urlparse
+
+from config import AppConfig
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8,10 +9,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("PISMA_DJANGO_SECRET_KEY", "SECRET_KEY")
+SECRET_KEY = AppConfig.PISMA_DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv("PISMA_DJANGO_DEBUG", "False") == "True")
+DEBUG = AppConfig.PISMA_DJANGO_DEBUG
 
 ALLOWED_HOSTS = ["*"]
 
@@ -30,12 +31,12 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": os.getenv("PISMA_DJANGO_CONSOLE_LOGGING_LEVEL", "WARNING"),
+            "level": AppConfig.PISMA_DJANGO_CONSOLE_LOGGING_LEVEL,
             "class": "logging.StreamHandler",
             "formatter": "common_full",
         },
         "pisma_log_file": {
-            "level": os.getenv("PISMA_DJANGO_FILE_LOGGING_LEVEL", "INFO"),
+            "level": AppConfig.PISMA_DJANGO_FILE_LOGGING_LEVEL,
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "logs", "pisma.log"),
             "formatter": "pisma_full",
@@ -49,12 +50,12 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console", "error_log_file"],
-        "level": os.getenv("PISMA_DJANGO_ROOT_LOGGING_LEVEL", "ERROR"),
+        "level": AppConfig.PISMA_DJANGO_ROOT_LOGGING_LEVEL,
     },
     "loggers": {
         "pisma": {
             "handlers": ["console", "pisma_log_file"],
-            "level": os.getenv("PISMA_DJANGO_PISMA_LOGGING_LEVEL", "INFO"),
+            "level": AppConfig.PISMA_DJANGO_PISMA_LOGGING_LEVEL,
         }
     },
 }
@@ -105,7 +106,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-SQL_ENGINE = os.getenv("PISMA_DJANGO_SQL_ENGINE", "django.db.backends.sqlite3")
+SQL_ENGINE = AppConfig.PISMA_DJANGO_SQL_ENGINE
 if SQL_ENGINE == "django.db.backends.sqlite3":
     DATABASES = {
         "default": {
@@ -114,7 +115,7 @@ if SQL_ENGINE == "django.db.backends.sqlite3":
         }
     }
 else:
-    DATABASE_URL = urlparse(os.getenv("PISMA_DATABASE_URL", ""))
+    DATABASE_URL = AppConfig.PISMA_DATABASE_URL
     DATABASES = {
         "default": {
             "ENGINE": SQL_ENGINE,
@@ -164,7 +165,6 @@ STATIC_URL = "/static/"
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
-
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 LOGIN_URL = "/login/"
