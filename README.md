@@ -49,6 +49,7 @@ All project wide settings should be done through environment variables
 - `PISMA_PEGAAPI_TIMEOUT` - timeout for PegaAPI services. Default is `5`
 - `PISMA_DJANGO_DEBUG` - debug mode for Django. Default is `False`
 - `PISMA_DJANGO_SECRET_KEY` - Django secret key. Default is `SECRET_KEY`. You **must** change it, if you use PISMA with production environments
+- `PISMA_DJANGO_SELF_SERVE_STATIC_FILES` - use WhiteNoise to serve static files. Default is `True`
 
 ### Server settings
 - `PISMA_HOST` - host to run application server. Default is `::`
