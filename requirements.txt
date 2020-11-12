@@ -11,7 +11,7 @@ mypy-extensions==0.4.3
 pathspec==0.8.1
 psycopg2-binary==2.8.6
 pytz==2020.4
-regex==2020.10.28
+regex==2020.11.11
 requests==2.25.0
 sqlparse==0.4.1
 toml==0.10.2
